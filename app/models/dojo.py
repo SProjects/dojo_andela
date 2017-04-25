@@ -12,6 +12,9 @@ class Dojo(object):
         self.livingspaces = []
 
     def create_room(self, room_names, room_type):
+        if not isinstance(room_names, list):
+            raise ValueError('Room names must be passed as a list.')
+
         if room_type == self.OFFICE_ROOM_TYPE:
             self._add_offices(room_names)
         if room_type == self.LIVINGSPACE_ROOM_TYPE:

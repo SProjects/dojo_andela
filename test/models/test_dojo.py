@@ -27,3 +27,6 @@ class TestDojo(unittest.TestCase):
     def test_create_room_adds_multiple_living_spaces_to_dojo(self):
         self.dojo.create_room(['livingspace1', 'livingspace2'], self.livingspace_room_type)
         self.assertListEqual(self.dojo.livingspaces, [Livingspace('livingspace1'), Livingspace('livingspace2')])
+
+    def test_create_room_raises_value_error_when_non_list_argument_is_passed(self):
+        self.assertRaises(ValueError, self.dojo.create_room, 'livingspace_name', self.livingspace_room_type)

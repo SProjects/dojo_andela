@@ -38,21 +38,21 @@ class Dojo(object):
             livingspace = Livingspace(name)
             self.livingspaces.append(livingspace)
 
-    def add_person(self, name, person_type, want_living_space):
+    def add_person(self, name, person_type, want_livingspace):
         if not isinstance(name, str):
             raise ValueError('Name must be a string')
 
         if person_type == self.FELLOW_PERSON_TYPE:
-            self._add_fellow(name, want_living_space)
+            self._add_fellow(name, want_livingspace)
         if person_type == self.STAFF_PERSON_TYPE:
             self._add_staff(name)
         self._update_available_livingspaces()
         self._update_available_offices()
 
-    def _add_fellow(self, name, want_living_space):
-        fellow = Fellow(name, want_living_space)
+    def _add_fellow(self, name, want_livingspace):
+        fellow = Fellow(name, want_livingspace)
         fellow = self._assign_office(fellow)
-        fellow = self._assign_livingspace(fellow) if want_living_space == 'Y' else fellow
+        fellow = self._assign_livingspace(fellow) if fellow.want_livingspace == 'Y' else fellow
         self.fellows.append(fellow)
 
     def _add_staff(self, name):

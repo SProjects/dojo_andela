@@ -67,3 +67,11 @@ class TestDojo(unittest.TestCase):
         self.dojo.add_person('Fellow Name', self.fellow_type, self.no_livingspace)
         self.assertEqual(self.dojo.fellows[0].office, None)
 
+    def test_person_not_assigned_office_if_office_has_no_space_left(self):
+        self.dojo.create_room(['office1'], self.office_room_type)
+        office1 = self.dojo.offices[0]
+        office1.spaces = 0
+
+        self.dojo.add_person('Fellow Name', self.fellow_type, self.no_livingspace)
+        self.assertEqual(self.dojo.fellows[0].office, None)
+

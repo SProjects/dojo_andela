@@ -27,3 +27,10 @@ class Livingspace(Room):
 
     def __init__(self, name):
         super(self.__class__, self).__init__(name, self.SPACE)
+
+    def add_fellow(self, fellow):
+        fellow.livingspace = self
+        self.spaces = -1
+        return fellow
+
+

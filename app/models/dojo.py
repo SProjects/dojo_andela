@@ -1,15 +1,18 @@
 from room import Office, Livingspace
+from person import Fellow
 
 
 class Dojo(object):
     OFFICE_ROOM_TYPE = 'OFFICE'
     LIVINGSPACE_ROOM_TYPE = 'LIVINGSPACE'
+    FELLOW_PERSON_TYPE = 'FELLOW'
 
     def __init__(self, name, location):
         self.name = name
         self.location = location
         self.offices = []
         self.livingspaces = []
+        self.fellows = []
 
     def create_room(self, room_names, room_type):
         if not isinstance(room_names, list):
@@ -29,6 +32,14 @@ class Dojo(object):
         for name in livingspace_names:
             livingspace = Livingspace(name)
             self.livingspaces.append(livingspace)
+
+    def add_person(self, name, person_type, want_living_space):
+        if person_type == self.FELLOW_PERSON_TYPE:
+            self._add_fellow(name, want_living_space)
+
+    def _add_fellow(self, name, want_living_space):
+        fellow = Fellow(name, want_living_space)
+        self.fellows.append(fellow)
 
 
 

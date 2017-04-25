@@ -1,6 +1,7 @@
 import unittest
 from app.models.dojo import Dojo
 from app.models.room import Office, Livingspace
+from app.models.person import Fellow
 
 
 class TestDojo(unittest.TestCase):
@@ -8,6 +9,9 @@ class TestDojo(unittest.TestCase):
         self.dojo = Dojo('Andela Dojo', 'Nairobi')
         self.office_room_type = 'OFFICE'
         self.livingspace_room_type = 'LIVINGSPACE'
+        self.fellow = 'FELLOW'
+        self.no_livingspace = 'N'
+        self.yes_livingspace = 'Y'
 
     def test_dojo_responds_to_its_properties(self):
         self.assertListEqual([self.dojo.name, self.dojo.location], ['Andela Dojo', 'Nairobi'])
@@ -33,3 +37,7 @@ class TestDojo(unittest.TestCase):
 
     def test_create_room_raises_type_error_when_wrong_number_of_parameters_is_received(self):
         self.assertRaises(TypeError, self.dojo.create_room, ['livingspace_name'])
+
+    def test_add_person_adds_new_fellow_to_dojo(self):
+        self.dojo.add_person('Fellow Name', self.fellow, self.no_livingspace)
+        self.assertEqual(self.dojo.fellows, [Fellow('Fellow Name', self.no_livingspace)])

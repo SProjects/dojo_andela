@@ -53,3 +53,17 @@ class TestDojo(unittest.TestCase):
     def test_add_person_raises_type_error_when_wrong_number_of_arguments_are_passed(self):
         self.assertRaises(TypeError, self.dojo.add_person, 123, self.fellow_type)
 
+    def test_when_person_is_created_is_assigned_office_in_dojo(self):
+        self.dojo.create_room(['office1'], self.office_room_type)
+        office1 = self.dojo.offices[0]
+
+        self.dojo.add_person('Fellow Name', self.fellow_type, self.no_livingspace)
+        self.dojo.add_person('Staff Name', self.staff_type, self.no_livingspace)
+
+        self.assertListEqual([self.dojo.staff[0].office, self.dojo.fellows[0].office], [office1, office1])
+        self.assertEqual(4, office1.spaces)
+
+    def test_person_is_not_assigned_office_if_no_office_has_been_created(self):
+        self.dojo.add_person('Fellow Name', self.fellow_type, self.no_livingspace)
+        self.assertEqual(self.dojo.fellows[0].office, None)
+

@@ -46,12 +46,25 @@ class Dojo(object):
 
     def _add_fellow(self, name, want_living_space):
         fellow = Fellow(name, want_living_space)
+        fellow = self._assign_office(fellow)
         self.fellows.append(fellow)
 
     def _add_staff(self, name):
         staff = Staff(name)
+        staff = self._assign_office(staff)
         self.staff.append(staff)
 
+    def _assign_office(self, person):
+        available_office = self._get_available_office()
+        if available_office:
+            return available_office.add_person(person)
+        return person
+
+    def _get_available_office(self):
+        for office in self.offices:
+            if office.has_space():
+                return office
+        return False
 
 
 

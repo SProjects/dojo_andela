@@ -6,7 +6,7 @@ class Room(object):
     def __eq__(self, other):
         return self.name == other.name
 
-    def add_person(self, person):
+    def assign_person_space(self, person):
         person.office = self
         self.spaces -= 1
         return person
@@ -28,7 +28,7 @@ class Livingspace(Room):
     def __init__(self, name):
         super(self.__class__, self).__init__(name, self.SPACE)
 
-    def add_fellow(self, fellow):
+    def assign_fellow_space(self, fellow):
         fellow.livingspace = self
         self.spaces -= 1
         return fellow

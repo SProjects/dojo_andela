@@ -58,7 +58,7 @@ class Dojo(object):
     def _assign_office(self, person):
         available_office = self._get_available_office()
         if available_office:
-            return available_office.add_person(person)
+            return available_office.assign_person_space(person)
         return person
 
     def _get_available_office(self):
@@ -70,7 +70,7 @@ class Dojo(object):
     def _assign_livingspace(self, fellow):
         available_livingspace = self._get_available_livingspace()
         if available_livingspace:
-            return available_livingspace.add_fellow(fellow)
+            return available_livingspace.assign_fellow_space(fellow)
         return fellow
 
     def _get_available_livingspace(self):

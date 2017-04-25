@@ -30,3 +30,6 @@ class TestDojo(unittest.TestCase):
 
     def test_create_room_raises_value_error_when_non_list_argument_is_passed(self):
         self.assertRaises(ValueError, self.dojo.create_room, 'livingspace_name', self.livingspace_room_type)
+
+    def test_create_room_raises_type_error_when_wrong_number_of_parameters_is_received(self):
+        self.assertRaises(TypeError, self.dojo.create_room, ['livingspace_name'])

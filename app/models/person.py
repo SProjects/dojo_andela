@@ -13,6 +13,9 @@ class Fellow(Person):
         self.want_livingspace = want_livingspace
         self.livingspace = None
 
+    def wants_accommodation(self):
+        return self.want_livingspace == 'Y'
+
 
 class Staff(Person):
     def __init__(self, name):

@@ -52,7 +52,7 @@ class Dojo(object):
     def _add_fellow(self, name, want_livingspace):
         fellow = Fellow(name, want_livingspace)
         fellow = self._assign_office(fellow)
-        fellow = self._assign_livingspace(fellow) if fellow.want_livingspace == 'Y' else fellow
+        fellow = self._assign_livingspace(fellow) if fellow.wants_accommodation() else fellow
         self.fellows.append(fellow)
 
     def _add_staff(self, name):
@@ -80,6 +80,16 @@ class Dojo(object):
             return available_livingspace.assign_fellow_space(fellow)
         return fellow
 
+    def print_people_in_room(self, room_name):
+        livingspaces = self.full_livingspaces + self.livingspaces
+        if room_name in [livingspace.name for livingspace in livingspaces]:
+            livingspace = [livingspace for livingspace in livingspaces if livingspace.name == room_name][0]
+            livingspace.print_occupants(self.fellows)
 
+        offices = self.full_offices + self.offices
+        if room_name in [office.name for office in offices]:
+            office = [office for office in offices if office.name == room_name][0]
+            occupants = self.staff + self.fellows
+            office.print_occupants(occupants)
 
 

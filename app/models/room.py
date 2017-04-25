@@ -14,6 +14,11 @@ class Room(object):
     def has_space(self):
         return self.spaces != 0
 
+    def print_occupants(self, occupants):
+        print self.name.upper()
+        print "--------------------------"
+        print ", ".join([occupant.name.upper() for occupant in occupants if occupant.office.name == self.name])
+
 
 class Office(Room):
     SPACES = 6
@@ -33,4 +38,8 @@ class Livingspace(Room):
         self.spaces -= 1
         return fellow
 
-
+    def print_occupants(self, occupants):
+        print self.name.upper()
+        print "--------------------------"
+        print ", ".join([occupant.name.upper() for occupant in occupants if
+                         occupant.wants_accommodation() and occupant.livingspace.name == self.name])

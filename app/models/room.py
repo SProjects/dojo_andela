@@ -30,7 +30,7 @@ class Livingspace(Room):
 
     def add_fellow(self, fellow):
         fellow.livingspace = self
-        self.spaces = -1
+        self.spaces -= 1
         return fellow
 
 

@@ -71,11 +71,13 @@ class Dojo(object):
         available_livingspace = self._get_available_livingspace()
         if available_livingspace:
             return available_livingspace.add_fellow(fellow)
+        return fellow
 
     def _get_available_livingspace(self):
         for livingspace in self.livingspaces:
             if livingspace.has_space():
                 return livingspace
+        return False
 
 
 

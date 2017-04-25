@@ -12,3 +12,7 @@ class Fellow(Person):
         self.want_livingspace = want_livingspace
 
 
+class Staff(Person):
+    def __init__(self, name):
+        super(Staff, self).__init__(name)
+

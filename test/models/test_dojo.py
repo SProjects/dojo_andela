@@ -47,3 +47,9 @@ class TestDojo(unittest.TestCase):
         self.dojo.add_person('Staff Name', self.staff_type, self.no_livingspace)
         self.assertEqual(self.dojo.staff, [Staff('Staff Name')])
 
+    def test_add_person_raises_values_error_when_none_string_name_parameter_is_passed(self):
+        self.assertRaises(ValueError, self.dojo.add_person, 123, self.fellow_type, self.no_livingspace)
+
+    def test_add_person_raises_type_error_when_wrong_number_of_arguments_are_passed(self):
+        self.assertRaises(TypeError, self.dojo.add_person, 123, self.fellow_type)
+

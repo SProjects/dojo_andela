@@ -36,6 +36,9 @@ class Dojo(object):
             self.livingspaces.append(livingspace)
 
     def add_person(self, name, person_type, want_living_space):
+        if not isinstance(name, str):
+            raise ValueError('Name must be a string')
+
         if person_type == self.FELLOW_PERSON_TYPE:
             self._add_fellow(name, want_living_space)
         if person_type == self.STAFF_PERSON_TYPE:

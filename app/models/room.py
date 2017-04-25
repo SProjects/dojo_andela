@@ -9,3 +9,8 @@ class Room(object):
 class Office(Room):
     def __init__(self, name):
         super(self.__class__, self).__init__(name)
+
+
+class Livingspace(Room):
+    def __init__(self, name):
+        super(self.__class__, self).__init__(name)

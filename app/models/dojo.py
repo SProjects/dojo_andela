@@ -1,3 +1,4 @@
+import random
 from room import Office, Livingspace
 from person import Fellow, Staff
 
@@ -12,7 +13,9 @@ class Dojo(object):
         self.name = name
         self.location = location
         self.offices = []
+        self.full_offices = []
         self.livingspaces = []
+        self.full_livingspaces = []
         self.fellows = []
         self.staff = []
 
@@ -43,6 +46,8 @@ class Dojo(object):
             self._add_fellow(name, want_living_space)
         if person_type == self.STAFF_PERSON_TYPE:
             self._add_staff(name)
+        self._update_available_livingspaces()
+        self._update_available_offices()
 
     def _add_fellow(self, name, want_living_space):
         fellow = Fellow(name, want_living_space)
@@ -55,29 +60,25 @@ class Dojo(object):
         staff = self._assign_office(staff)
         self.staff.append(staff)
 
+    def _update_available_livingspaces(self):
+        self.livingspaces = [livingspace for livingspace in self.livingspaces if livingspace.has_space()]
+        self.full_livingspaces = [livingspace for livingspace in self.livingspaces if not livingspace.has_space()]
+
+    def _update_available_offices(self):
+        self.offices = [office for office in self.offices if office.has_space()]
+        self.full_offices = [office for office in self.offices if not office.has_space()]
+
     def _assign_office(self, person):
-        available_office = self._get_available_office()
-        if available_office:
+        if self.offices:
+            available_office = random.choice(self.offices)
             return available_office.assign_person_space(person)
         return person
 
-    def _get_available_office(self):
-        for office in self.offices:
-            if office.has_space():
-                return office
-        return False
-
     def _assign_livingspace(self, fellow):
-        available_livingspace = self._get_available_livingspace()
-        if available_livingspace:
+        if self.livingspaces:
+            available_livingspace = random.choice(self.livingspaces)
             return available_livingspace.assign_fellow_space(fellow)
         return fellow
-
-    def _get_available_livingspace(self):
-        for livingspace in self.livingspaces:
-            if livingspace.has_space():
-                return livingspace
-        return False
 
 
 

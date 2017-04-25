@@ -1,22 +1,31 @@
-from room import Office
+from room import Office, Livingspace
 
 
 class Dojo(object):
     OFFICE_ROOM_TYPE = 'OFFICE'
+    LIVINGSPACE_ROOM_TYPE = 'LIVINGSPACE'
 
     def __init__(self, name, location):
         self.name = name
         self.location = location
         self.offices = []
+        self.livingspaces = []
 
     def create_room(self, room_names, room_type):
         if room_type == self.OFFICE_ROOM_TYPE:
             self._add_offices(room_names)
+        if room_type == self.LIVINGSPACE_ROOM_TYPE:
+            self._add_livingspaces(room_names)
 
     def _add_offices(self, office_names):
         for name in office_names:
             office = Office(name)
             self.offices.append(office)
+
+    def _add_livingspaces(self, livingspace_names):
+        for name in livingspace_names:
+            livingspace = Livingspace(name)
+            self.livingspaces.append(livingspace)
 
 
 

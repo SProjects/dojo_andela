@@ -107,10 +107,22 @@ class Dojo(object):
             print
 
     def print_unallocated_people(self):
-        result = ''
-        result += ", ".join(
-            [fellow.name.upper() for fellow in self.fellows if not fellow.office or not fellow.livingspace])
-        result += ", "
-        result += ", ".join([staff.name.upper() for staff in self.staff if not staff.office])
-        print result
+        unallocated_fellows = self._unallocated_fellows()
+        unallocated_staff = self._unallocated_staff()
 
+        if unallocated_fellows:
+            print "UNALLOCATED FELLOWS"
+            print "------------------------"
+            print ", ".join([fellow.name.upper() for fellow in unallocated_fellows])
+            print
+
+        if unallocated_staff:
+            print "UNALLOCATED STAFF"
+            print "------------------------"
+            print ", ".join([staff.name.upper() for staff in unallocated_staff])
+
+    def _unallocated_fellows(self):
+        return [fellow for fellow in self.fellows if not fellow.office or not fellow.livingspace]
+
+    def _unallocated_staff(self):
+        return [staff for staff in self.staff if not staff.office]

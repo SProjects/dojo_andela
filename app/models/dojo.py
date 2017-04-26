@@ -12,10 +12,10 @@ class Dojo(object):
     def __init__(self, name, location):
         self.name = name
         self.location = location
-        self.offices = []
-        self.full_offices = []
-        self.livingspaces = []
-        self.full_livingspaces = []
+        self.offices = {}
+        self.full_offices = {}
+        self.livingspaces = {}
+        self.full_livingspaces = {}
         self.fellows = []
         self.staff = []
 
@@ -28,15 +28,15 @@ class Dojo(object):
         if room_type == self.LIVINGSPACE_ROOM_TYPE:
             self._add_livingspaces(room_names)
 
-    def _add_offices(self, office_names):
-        for name in office_names:
-            office = Office(name)
-            self.offices.append(office)
+    def _add_offices(self, names):
+        for name in names:
+            if name not in self.offices or name not in self.full_offices:
+                self.offices[name] = Office(name)
 
-    def _add_livingspaces(self, livingspace_names):
-        for name in livingspace_names:
-            livingspace = Livingspace(name)
-            self.livingspaces.append(livingspace)
+    def _add_livingspaces(self, names):
+        for name in names:
+            if name not in self.livingspaces or name not in self.full_livingspaces:
+                self.livingspaces[name] = Livingspace(name)
 
     def add_person(self, name, person_type, accommodation):
         if not isinstance(name, str):
@@ -61,40 +61,48 @@ class Dojo(object):
         self.staff.append(staff)
 
     def _update_available_livingspaces(self):
-        self.livingspaces = [livingspace for livingspace in self.livingspaces if livingspace.has_space()]
-        self.full_livingspaces = [livingspace for livingspace in self.livingspaces if not livingspace.has_space()]
+        self.livingspaces = {livingspace_name: livingspace for livingspace_name, livingspace in
+                             self.livingspaces.items() if livingspace.has_space()}
+
+        self.full_livingspaces = {livingspace_name: livingspace for livingspace_name, livingspace in
+                                  self.livingspaces.items() if not livingspace.has_space()}
 
     def _update_available_offices(self):
-        self.offices = [office for office in self.offices if office.has_space()]
-        self.full_offices = [office for office in self.offices if not office.has_space()]
+        self.offices = {office_name: office for office_name, office in self.offices.items() if
+                        office.has_space()}
+
+        self.full_offices = {office_name: office for office_name, office in self.offices.items() if
+                             not office.has_space()}
 
     def _assign_office(self, person):
         if self.offices:
-            available_office = random.choice(self.offices)
+            _, available_office = random.choice(list(self.offices.items()))
             return available_office.assign_person_space(person)
         return person
 
     def _assign_livingspace(self, fellow):
         if self.livingspaces:
-            available_livingspace = random.choice(self.livingspaces)
+            _, available_livingspace = random.choice(list(self.livingspaces.items()))
             return available_livingspace.assign_fellow_space(fellow)
         return fellow
 
     def print_people_in_room(self, room_name):
-        livingspaces = self.full_livingspaces + self.livingspaces
-        if room_name in [livingspace.name for livingspace in livingspaces]:
-            livingspace = [livingspace for livingspace in livingspaces if livingspace.name == room_name][0]
+        livingspaces = dict(list(self.full_livingspaces.items()) + list(self.livingspaces.items()))
+        if room_name in livingspaces:
+            livingspace = livingspaces[room_name]
             livingspace.print_occupants(self.fellows)
 
-        offices = self.full_offices + self.offices
-        if room_name in [office.name for office in offices]:
-            office = [office for office in offices if office.name == room_name][0]
+        offices = dict(list(self.full_offices.items()) + list(self.offices.items()))
+        if room_name in offices:
+            office = offices[room_name]
             occupants = self.staff + self.fellows
             office.print_occupants(occupants)
 
     def print_allocated_people(self):
-        spaces = self.full_livingspaces + self.livingspaces + self.full_offices + self.offices
-        for space in spaces:
+        spaces = dict(list(self.full_livingspaces.items()) + list(self.livingspaces.items()) +
+                      list(self.full_offices.items()) + list(self.offices.items()))
+
+        for space_name, space in spaces.items():
             self.print_people_in_room(space.name)
             print
 

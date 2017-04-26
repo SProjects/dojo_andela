@@ -1,13 +1,14 @@
-import random
+import random, os
 from room import Office, Livingspace
 from person import Fellow, Staff
 
 
 class Dojo(object):
-    OFFICE_ROOM_TYPE = 'OFFICE'
-    LIVINGSPACE_ROOM_TYPE = 'LIVINGSPACE'
-    FELLOW_PERSON_TYPE = 'FELLOW'
-    STAFF_PERSON_TYPE = 'STAFF'
+    ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+    OFFICE_ROOM_TYPE = "OFFICE"
+    LIVINGSPACE_ROOM_TYPE = "LIVINGSPACE"
+    FELLOW_PERSON_TYPE = "FELLOW"
+    STAFF_PERSON_TYPE = "STAFF"
 
     def __init__(self, name, location):
         self.name = name
@@ -21,7 +22,7 @@ class Dojo(object):
 
     def create_room(self, room_names, room_type):
         if not isinstance(room_names, list):
-            raise ValueError('Room names must be passed as a list.')
+            raise ValueError("Room names must be passed as a list.")
 
         if room_type == self.OFFICE_ROOM_TYPE:
             self._add_offices(room_names)
@@ -40,7 +41,7 @@ class Dojo(object):
 
     def add_person(self, name, person_type, accommodation):
         if not isinstance(name, str):
-            raise ValueError('Name must be a string')
+            raise ValueError("Name must be a string")
 
         if person_type == self.FELLOW_PERSON_TYPE:
             self._add_fellow(name, accommodation)
@@ -48,6 +49,16 @@ class Dojo(object):
         if person_type == self.STAFF_PERSON_TYPE:
             self._add_staff(name)
         self._update_available_offices()
+
+    def add_people_from_file(self):
+        file_path = self.ROOT_DIR + "/../../files/input.txt"
+        if os.path.isfile(file_path):
+            with open(file_path, "r") as f:
+                for line in f.readlines():
+                    tokens = line.strip().split(" ")
+                    name, person_type = " ".join(tokens[:2]), tokens[2]
+                    accommodation = tokens[3:][0] if tokens[3:] else 'N'
+                    self.add_person(name, person_type, accommodation)
 
     def _add_fellow(self, name, accommodation):
         fellow = Fellow(name, accommodation)
@@ -132,7 +143,7 @@ class Dojo(object):
         offices = dict(list(self.full_offices.items()) + list(self.offices.items()))
         occupants = self.staff + self.fellows
 
-        with open(filename, 'w') as f:
+        with open(filename, "w") as f:
             for livingspace_name, livingspace in livingspaces.items():
                 f.write(livingspace_name.upper())
                 f.write("\n------------------------\n")
@@ -149,7 +160,8 @@ class Dojo(object):
         unallocated_fellows = self._unallocated_fellows()
         unallocated_staff = self._unallocated_staff()
 
-        with open(filename, 'w') as f:
+        file_path = self.ROOT_DIR + "/../../files/" + filename
+        with open(file_path, "w") as f:
             if unallocated_fellows:
                 f.write("UNALLOCATED FELLOWS")
                 f.write("\n------------------------\n")

@@ -8,13 +8,13 @@ class Person(object):
 
 
 class Fellow(Person):
-    def __init__(self, name, want_livingspace):
+    def __init__(self, name, accommodation):
         super(self.__class__, self).__init__(name, None)
-        self.want_livingspace = want_livingspace
+        self.accommodation = accommodation
         self.livingspace = None
 
     def wants_accommodation(self):
-        return self.want_livingspace == 'Y'
+        return self.accommodation == 'Y'
 
 
 class Staff(Person):

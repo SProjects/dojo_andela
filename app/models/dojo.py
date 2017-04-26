@@ -126,3 +126,38 @@ class Dojo(object):
 
     def _unallocated_staff(self):
         return [staff for staff in self.staff if not staff.office]
+
+    def print_allocated_people_to_file(self, filename):
+        livingspaces = dict(list(self.full_livingspaces.items()) + list(self.livingspaces.items()))
+        offices = dict(list(self.full_offices.items()) + list(self.offices.items()))
+        occupants = self.staff + self.fellows
+
+        with open(filename, 'w') as f:
+            for livingspace_name, livingspace in livingspaces.items():
+                f.write(livingspace_name.upper())
+                f.write("\n------------------------\n")
+                f.write(", ".join([occupant.name.upper() for occupant in livingspace.get_occupants(self.fellows)]))
+                f.write("\n\n")
+
+            for office_name, office in offices.items():
+                f.write(office_name.upper())
+                f.write("\n------------------------\n")
+                f.write(", ".join([occupant.name.upper() for occupant in office.get_occupants(occupants)]))
+                f.write("\n\n")
+
+    def print_unallocated_people_to_file(self, filename):
+        unallocated_fellows = self._unallocated_fellows()
+        unallocated_staff = self._unallocated_staff()
+
+        with open(filename, 'w') as f:
+            if unallocated_fellows:
+                f.write("UNALLOCATED FELLOWS")
+                f.write("\n------------------------\n")
+                f.write(", ".join([fellow.name.upper() for fellow in unallocated_fellows]))
+                f.write("\n\n")
+
+            if unallocated_staff:
+                f.write("UNALLOCATED STAFF")
+                f.write("\n------------------------\n")
+                f.write(", ".join([staff.name.upper() for staff in unallocated_staff]))
+                f.write("\n\n")

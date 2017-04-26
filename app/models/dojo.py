@@ -44,9 +44,9 @@ class Dojo(object):
 
         if person_type == self.FELLOW_PERSON_TYPE:
             self._add_fellow(name, want_livingspace)
+            self._update_available_livingspaces()
         if person_type == self.STAFF_PERSON_TYPE:
             self._add_staff(name)
-        self._update_available_livingspaces()
         self._update_available_offices()
 
     def _add_fellow(self, name, want_livingspace):
@@ -92,4 +92,17 @@ class Dojo(object):
             occupants = self.staff + self.fellows
             office.print_occupants(occupants)
 
+    def print_allocated_people(self):
+        spaces = self.full_livingspaces + self.livingspaces + self.full_offices + self.offices
+        for space in spaces:
+            self.print_people_in_room(space.name)
+            print
+
+    def print_unallocated_people(self):
+        result = ''
+        result += ", ".join(
+            [fellow.name.upper() for fellow in self.fellows if not fellow.office or not fellow.livingspace])
+        result += ", "
+        result += ", ".join([staff.name.upper() for staff in self.staff if not staff.office])
+        print result
 

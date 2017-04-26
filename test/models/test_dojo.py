@@ -1,7 +1,39 @@
 import unittest
+import sys, re
+from cStringIO import StringIO
 from app.models.dojo import Dojo
 from app.models.room import Office, Livingspace
 from app.models.person import Fellow, Staff
+
+"""Citation:
+    Link: http://code.activestate.com/lists/python-list/366576/
+    By: Miki Tebeka
+"""
+
+
+def with_io_divert(func):
+    """Divert stdout"""
+    orig = sys.stdout
+    io = StringIO()
+    sys.stdout = io
+    try:
+        func(io)
+    finally:
+        sys.stdout = orig
+        io_clear(io)
+
+
+def io_clear(io):
+    """Clear io"""
+    io.seek(0)
+    io.truncate()
+
+
+def io_value(io):
+    """Value in io"""
+    return io.getvalue().strip()
+
+"""End citation"""
 
 
 class TestDojo(unittest.TestCase):
@@ -78,3 +110,45 @@ class TestDojo(unittest.TestCase):
     def test_fellow_is_not_assigned_a_livingspace_if_no_livingspace_room_is_created(self):
         self.dojo.add_person('Fellow Name', self.fellow_type, self.yes_livingspace)
         self.assertEqual(self.dojo.fellows[0].livingspace, None)
+
+    def test_print_people_in_room_prints_people_assigned_to_a_room(self):
+        def func(io):
+            self.dojo.create_room(['livingspace1'], self.livingspace_room_type)
+            livingspace = self.dojo.livingspaces[0]
+
+            self.dojo.add_person('Fellow Name', self.fellow_type, self.yes_livingspace)
+            fellow = self.dojo.fellows[0]
+
+            self.dojo.print_people_in_room('livingspace1')
+
+            self.assertIn(fellow.name.upper(), io_value(io))
+            self.assertIn(livingspace.name.upper(), io_value(io))
+        with_io_divert(func)
+
+    def test_print_allocated_people_prints_people_that_have_been_assigned_rooms(self):
+        def func(io):
+            self.dojo.create_room(['livingspace1'], self.livingspace_room_type)
+            livingspace = self.dojo.livingspaces[0]
+
+            self.dojo.create_room(['office1'], self.office_room_type)
+            office = self.dojo.offices[0]
+
+            self.dojo.add_person('Fellow Name', self.fellow_type, self.yes_livingspace)
+            fellow = self.dojo.fellows[0]
+
+            self.dojo.print_allocated_people()
+
+            self.assertIn(fellow.name.upper(), io_value(io))
+            self.assertIn(livingspace.name.upper(), io_value(io))
+            self.assertIn(office.name.upper(), io_value(io))
+        with_io_divert(func)
+
+    def test_print_unallocated_people_prints_people_who_have_not_been_assigned_one_or_all_rooms(self):
+        def func(io):
+            self.dojo.add_person('Fellow Name', self.fellow_type, self.yes_livingspace)
+            fellow = self.dojo.fellows[0]
+
+            self.dojo.print_unallocated_people()
+
+            self.assertIn(fellow.name.upper(), io_value(io))
+        with_io_divert(func)

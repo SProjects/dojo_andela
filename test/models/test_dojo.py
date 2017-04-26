@@ -1,6 +1,7 @@
 import unittest
-import sys, re
+import sys
 from cStringIO import StringIO
+from mock import mock_open, patch
 from app.models.dojo import Dojo
 from app.models.room import Office, Livingspace
 from app.models.person import Fellow, Staff
@@ -165,3 +166,11 @@ class TestDojo(unittest.TestCase):
 
             self.assertIn(fellow.name.upper(), io_value(io))
         with_io_divert(func)
+
+    def test_print_allocated_people_to_file_is_called_with_filename(self):
+        with patch.object(Dojo, 'print_allocated_people_to_file', return_value=None) as mock_method:
+            dojo = Dojo('Andela', 'Nairobi')
+            dojo.print_allocated_people_to_file('output.txt')
+        mock_method.assert_called_once_with('output.txt')
+
+

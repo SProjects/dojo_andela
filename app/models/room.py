@@ -17,7 +17,10 @@ class Room(object):
     def print_occupants(self, occupants):
         print self.name.upper()
         print "--------------------------"
-        print ", ".join([occupant.name.upper() for occupant in occupants if occupant.office.name == self.name])
+        print ", ".join([occupant.name.upper() for occupant in self.get_occupants(occupants)])
+
+    def get_occupants(self, occupants):
+        return [occupant for occupant in occupants if occupant.office.name == self.name]
 
 
 class Office(Room):
@@ -41,5 +44,8 @@ class Livingspace(Room):
     def print_occupants(self, occupants):
         print self.name.upper()
         print "--------------------------"
-        print ", ".join([occupant.name.upper() for occupant in occupants if
-                         occupant.wants_accommodation() and occupant.livingspace.name == self.name])
+        print ", ".join([occupant.name.upper() for occupant in self.get_occupants(occupants)])
+
+    def get_occupants(self, occupants):
+        return [occupant for occupant in occupants if
+                occupant.wants_accommodation() and occupant.livingspace.name == self.name]

@@ -39,11 +39,13 @@ class Dojo(object):
         for name in names:
             if name not in self.offices or name not in self.full_offices:
                 self.offices[name] = Office(name)
+                print "An office called {} has successfully been created.".format(name)
 
     def _add_livingspaces(self, names):
         for name in names:
             if name not in self.livingspaces or name not in self.full_livingspaces:
                 self.livingspaces[name] = Livingspace(name)
+                print "A livingspace called {} has successfully been created.".format(name)
 
     def add_person(self, name, person_type, accommodation):
         if not isinstance(name, str):

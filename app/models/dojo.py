@@ -243,6 +243,12 @@ class Dojo(object):
         Staff.save(self)
         self.session.commit()
 
+    def load_state(self):
+        Office.load(self)
+        Livingspace.load(self)
+        Fellow.load(self)
+        Staff.load(self)
+        return self
 
 
 

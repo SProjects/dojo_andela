@@ -219,11 +219,12 @@ class TestDojo(unittest.TestCase):
         mock_output_file_handle = fake_open()
         mock_output_file_handle.write.assert_called_with(expected_output)
 
-    @patch('__builtin__.open', new_callable=mock_open, read_data='FELLOW NAME FELLOW Y', create=True)
+    @patch('__builtin__.open', new_callable=mock_open, read_data='FELLOW NAME FELLOW Y\nSTAFF NAME STAFF', create=True)
     def test_add_people_from_file_add_new_people_from_a_formatted_input_text_file(self, fake_open):
         filename = 'input.txt'
         file_path = self.ROOT_DIR + '/../../files/'+filename
         fellow = Fellow('FELLOW NAME', self.yes_livingspace)
+        staff = Staff('STAFF NAME')
 
         self.dojo.add_people_from_file()
 
@@ -231,6 +232,7 @@ class TestDojo(unittest.TestCase):
         mock_output_file_handle = fake_open()
         mock_output_file_handle.readlines.assert_called_with()
         self.assertListEqual(self.dojo.fellows, [fellow])
+        self.assertListEqual(self.dojo.staff, [staff])
 
     def test_reallocate_person_changes_fellow_to_another_office(self):
         office1_name = 'office1'

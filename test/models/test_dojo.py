@@ -265,3 +265,20 @@ class TestDojo(unittest.TestCase):
         self.assertNotEqual(self.dojo.fellows[0].livingspace, livingspace1)
         self.assertEqual(self.dojo.fellows[0].livingspace, livingspace2)
 
+    def test_reallocate_person_changes_staff_to_another_office(self):
+        office1_name = 'office1'
+        office2_name = 'office2'
+        self.dojo.create_room([office1_name], self.office_room_type)
+        office1 = self.dojo.offices[office1_name]
+
+        staff_name = "Staff Name"
+        self.dojo.add_person(staff_name, self.staff_type, self.no_livingspace)
+
+        self.dojo.create_room([office2_name], self.office_room_type)
+        office2 = self.dojo.offices[office2_name]
+
+        self.dojo.reallocate_person(staff_name, office2_name)
+
+        self.assertNotEqual(self.dojo.staff[0].office, office1)
+        self.assertEqual(self.dojo.staff[0].office, office2)
+

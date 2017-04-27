@@ -209,6 +209,12 @@ class Dojo(object):
             fellow = fellow[0]
             fellow_index = self.fellows.index(fellow)
             self._reassign_fellow_to_new_livingspace(fellow, fellow_index, new_livingspace)
+        if staff and new_office:
+            staff = staff[0]
+            staff_index = self.staff.index(staff)
+            self._reassign_staff_to_new_office(staff, staff_index, new_office)
+        if staff and new_livingspace:
+            print "Error: Staff can't be assigned a livingspace."
 
     def _reassign_fellow_to_new_office(self, fellow, index, new_office):
         fellow.office = new_office
@@ -217,6 +223,10 @@ class Dojo(object):
     def _reassign_fellow_to_new_livingspace(self, fellow, index, new_livingspace):
         fellow.livingspace = new_livingspace
         self.fellows[index] = fellow
+
+    def _reassign_staff_to_new_office(self, staff, index, new_office):
+        staff.office = new_office
+        self.staff[index] = staff
 
 
 

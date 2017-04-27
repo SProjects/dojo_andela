@@ -1,6 +1,4 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from app.db.models import Office as DBOffice, Livingspace as DBLivingspace, engine
+from app.db.models import Office as DBOffice, Livingspace as DBLivingspace
 
 
 class Room(object):
@@ -14,6 +12,7 @@ class Room(object):
     def assign_person_space(self, person):
         person.office = self
         self.spaces -= 1
+        print "{} has been allocated the office {}".format(person.name, self.name)
         return person
 
     def has_space(self):
@@ -75,6 +74,7 @@ class Livingspace(Room):
     def assign_fellow_space(self, fellow):
         fellow.livingspace = self
         self.spaces -= 1
+        print "{} has been allocated the livingspace {}".format(fellow.name, self.name)
         return fellow
 
     def print_occupants(self, occupants):

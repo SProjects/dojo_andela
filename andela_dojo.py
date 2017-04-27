@@ -113,6 +113,11 @@ class DojoInteractive(cmd.Cmd):
         except StaffCantBeAssignedToLivingspace as e:
             print e
 
+    @docopt_cmd
+    def do_load_people(self, args):
+        """Usage: load_people"""
+        dojo.add_people_from_file()
+
     def do_quit(self, arg):
         """Quits out of Interactive Mode."""
         print('Good Bye!')

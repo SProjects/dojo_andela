@@ -139,9 +139,10 @@ class Dojo(object):
         return [staff for staff in self.staff if not staff.office]
 
     def print_allocated_people_to_file(self, filename):
+        file_path = self.ROOT_DIR + "/../../files/" + filename
         result_string = self._generate_allocated_print_statement()
 
-        with open(filename, "w") as f:
+        with open(file_path, "w") as f:
             f.write(result_string)
 
     def _generate_allocated_print_statement(self):
@@ -167,19 +168,29 @@ class Dojo(object):
         return livingspace_string + office_string
 
     def print_unallocated_people_to_file(self, filename):
+        file_path = self.ROOT_DIR + "/../../files/" + filename
+        result_string = self._generate_unallocated_print_statement()
+
+        with open(file_path, "w") as f:
+            f.write(result_string)
+
+    def _generate_unallocated_print_statement(self):
         unallocated_fellows = self._unallocated_fellows()
         unallocated_staff = self._unallocated_staff()
 
-        file_path = self.ROOT_DIR + "/../../files/" + filename
-        with open(file_path, "w") as f:
-            if unallocated_fellows:
-                f.write("UNALLOCATED FELLOWS")
-                f.write("\n------------------------\n")
-                f.write(", ".join([fellow.name.upper() for fellow in unallocated_fellows]))
-                f.write("\n\n")
+        fellow_string = ''
+        if unallocated_fellows:
+            fellow_string = "UNALLOCATED FELLOWS"
+            fellow_string += "\n------------------------\n"
+            fellow_string += ", ".join([fellow.name.upper() for fellow in unallocated_fellows])
+            fellow_string += "\n\n"
 
-            if unallocated_staff:
-                f.write("UNALLOCATED STAFF")
-                f.write("\n------------------------\n")
-                f.write(", ".join([staff.name.upper() for staff in unallocated_staff]))
-                f.write("\n\n")
+        staff_string = ''
+        if unallocated_staff:
+            staff_string = "UNALLOCATED STAFF"
+            staff_string += "\n------------------------\n"
+            staff_string += ", ".join([staff.name.upper() for staff in unallocated_staff])
+            staff_string += "\n\n"
+
+        return fellow_string + staff_string
+

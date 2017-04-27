@@ -47,6 +47,7 @@ class TestDojo(unittest.TestCase):
         self.no_livingspace = 'N'
         self.yes_livingspace = 'Y'
         self.staff_type = 'STAFF'
+        self.ROOT_DIR = Dojo.ROOT_DIR
 
     def test_dojo_responds_to_its_properties(self):
         self.assertListEqual([self.dojo.name, self.dojo.location], ['Andela Dojo', 'Nairobi'])
@@ -188,13 +189,33 @@ class TestDojo(unittest.TestCase):
         staff = self.dojo.staff[0]
 
         filename = 'output.txt'
-        expected_output = ''
-        expected_output += '{}\n------------------------\n{}\n\n'.format(livingspace.name.upper(), fellow.name.upper())
+        file_path = self.ROOT_DIR + '/../../files/output.txt'
+        expected_output = '{}\n------------------------\n{}\n\n'.format(livingspace.name.upper(), fellow.name.upper())
         expected_output += '{}\n------------------------\n{}, {}\n\n'.format(office.name.upper(), staff.name.upper(),
                                                                              fellow.name.upper())
 
         self.dojo.print_allocated_people_to_file(filename)
 
-        fake_open.assert_called_once_with(filename, 'w')
+        fake_open.assert_called_once_with(file_path, 'w')
         mock_output_file_handle = fake_open()
         mock_output_file_handle.write.assert_called_with(expected_output)
+
+    @patch('__builtin__.open', new_callable=mock_open, create=True)
+    def test_print_unallocated_people_to_file_prints_text_file_unallocated_people(self, fake_open):
+        self.dojo.add_person('Fellow Name', self.fellow_type, self.yes_livingspace)
+        fellow = self.dojo.fellows[0]
+
+        self.dojo.add_person('Staff Name', self.staff_type, self.no_livingspace)
+        staff = self.dojo.staff[0]
+
+        filename = 'output.txt'
+        file_path = self.ROOT_DIR + '/../../files/output.txt'
+        expected_output = 'UNALLOCATED FELLOWS\n------------------------\n{}\n\n'.format(fellow.name.upper())
+        expected_output += 'UNALLOCATED STAFF\n------------------------\n{}\n\n'.format(staff.name.upper())
+
+        self.dojo.print_unallocated_people_to_file(filename)
+        fake_open.assert_called_once_with(file_path, 'w')
+        mock_output_file_handle = fake_open()
+        mock_output_file_handle.write.assert_called_with(expected_output)
+
+

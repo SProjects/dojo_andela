@@ -5,6 +5,7 @@ from mock import mock_open, patch
 from app.models.dojo import Dojo
 from app.models.room import Office, Livingspace
 from app.models.person import Fellow, Staff
+from app.errors.dojo_errors import StaffCantBeAssignedToLivingspace
 
 """Citation:
     Link: http://code.activestate.com/lists/python-list/366576/
@@ -281,4 +282,14 @@ class TestDojo(unittest.TestCase):
 
         self.assertNotEqual(self.dojo.staff[0].office, office1)
         self.assertEqual(self.dojo.staff[0].office, office2)
+
+    def test_reallocate_person_raises_error_when_there_is_attempt_to_reassign_staff_to_livingspace(self):
+        livingspace1_name = 'livingspace1'
+        self.dojo.create_room([livingspace1_name], self.livingspace_room_type)
+
+        staff_name = "Staff Name"
+        self.dojo.add_person(staff_name, self.staff_type, self.no_livingspace)
+
+        self.assertRaises(StaffCantBeAssignedToLivingspace, self.dojo.reallocate_person, staff_name, livingspace1_name)
+
 

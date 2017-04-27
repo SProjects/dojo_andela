@@ -1,0 +1,3 @@
+class StaffCantBeAssignedToLivingspace(RuntimeError):
+    pass
+

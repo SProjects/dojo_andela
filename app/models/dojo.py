@@ -1,6 +1,7 @@
 import random, os
 from room import Office, Livingspace
 from person import Fellow, Staff
+from app.errors.dojo_errors import StaffCantBeAssignedToLivingspace
 
 
 class Dojo(object):
@@ -214,7 +215,7 @@ class Dojo(object):
             staff_index = self.staff.index(staff)
             self._reassign_staff_to_new_office(staff, staff_index, new_office)
         if staff and new_livingspace:
-            print "Error: Staff can't be assigned a livingspace."
+            raise StaffCantBeAssignedToLivingspace("Staff can't be assigned a livingspace.")
 
     def _reassign_fellow_to_new_office(self, fellow, index, new_office):
         fellow.office = new_office

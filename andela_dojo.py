@@ -4,7 +4,8 @@ Usage:
     andela_dojo.py create <room_type> <room_name>...
     andela_dojo.py add_person <person_name> (FELLOW | STAFF) [wants_accommodation]
     andela_dojo.py print_room <room_name>
-    andela_dojo.py print_allocations [-o filename]
+    andela_dojo.py print_allocations [-o FILENAME]
+    andela_dojo.py print_unallocated [-o FILENAME]
     andela_dojo.py -i | --interactive
     andela_dojo.py -h | --help
     andela_dojo.py --version
@@ -89,6 +90,16 @@ class DojoInteractive(cmd.Cmd):
             dojo.print_allocated_people_to_file(filename)
         else:
             dojo.print_allocated_people()
+
+    @docopt_cmd
+    def do_print_unallocated(self, args):
+        """Usage: print_unallocated [-o FILENAME]"""
+        output_to_file = args["-o"]
+        filename = args["FILENAME"]
+        if output_to_file and filename:
+            dojo.print_unallocated_people_to_file(filename)
+        else:
+            dojo.print_unallocated_people()
 
     def do_quit(self, arg):
         """Quits out of Interactive Mode."""

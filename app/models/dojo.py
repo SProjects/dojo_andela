@@ -187,6 +187,9 @@ class Dojo(object):
         with open(file_path, "w") as f:
             f.write(result_string)
 
+        if os.path.isfile(file_path):
+            print "{} file has been successfully created.".format(filename)
+
     def _generate_unallocated_print_statement(self):
         unallocated_fellows = self._unallocated_fellows()
         unallocated_staff = self._unallocated_staff()

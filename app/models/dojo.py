@@ -155,6 +155,9 @@ class Dojo(object):
         with open(file_path, "w") as f:
             f.write(result_string)
 
+        if os.path.isfile(file_path):
+            print "{} file has been successfully created.".format(filename)
+
     def _generate_allocated_print_statement(self):
         livingspaces = dict(list(self.full_livingspaces.items()) + list(self.livingspaces.items()))
         offices = dict(list(self.full_offices.items()) + list(self.offices.items()))

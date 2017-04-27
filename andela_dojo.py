@@ -4,12 +4,14 @@ Usage:
     andela_dojo.py create <room_type> <room_name>...
     andela_dojo.py add_person <person_name> (FELLOW | STAFF) [wants_accommodation]
     andela_dojo.py print_room <room_name>
+    andela_dojo.py print_allocations [-o filename]
     andela_dojo.py -i | --interactive
     andela_dojo.py -h | --help
     andela_dojo.py --version
 
 Options:
     -i --interactive  Interactive Mode
+    -o FILENAME --output=FILENAME   Provide output file [default: output.txt]
     -h --help    show help
     --version    show version of the application
 """
@@ -77,6 +79,16 @@ class DojoInteractive(cmd.Cmd):
         """Usage: print_room <room_name>"""
         room_name = args["<room_name>"]
         dojo.print_people_in_room(room_name)
+
+    @docopt_cmd
+    def do_print_allocations(self, args):
+        """Usage: print_allocations [-o FILENAME]"""
+        output_to_file = args["-o"]
+        filename = args["FILENAME"]
+        if output_to_file and filename:
+            dojo.print_allocated_people_to_file(filename)
+        else:
+            dojo.print_allocated_people()
 
     def do_quit(self, arg):
         """Quits out of Interactive Mode."""

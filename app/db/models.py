@@ -5,7 +5,7 @@ from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
-engine = create_engine("sqlite:///andela_dojo.db", echo=True)
+engine = create_engine("sqlite:///andela_dojo.db", echo=False)
 Base = declarative_base()
 
 eat_timezone = pytz.timezone('Africa/Nairobi')

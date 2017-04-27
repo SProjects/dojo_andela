@@ -6,6 +6,7 @@ Usage:
     andela_dojo.py print_room <room_name>
     andela_dojo.py print_allocations [-o FILENAME]
     andela_dojo.py print_unallocated [-o FILENAME]
+    andela_dojo.py reallocate_person <person_identifier> <new_room_name>
     andela_dojo.py -i | --interactive
     andela_dojo.py -h | --help
     andela_dojo.py --version
@@ -20,6 +21,7 @@ Options:
 import sys, cmd
 from docopt import docopt, DocoptExit
 from app.models.dojo import Dojo
+from app.errors.dojo_errors import StaffCantBeAssignedToLivingspace
 
 
 dojo = Dojo("Andela", "Nairobi")
@@ -100,6 +102,16 @@ class DojoInteractive(cmd.Cmd):
             dojo.print_unallocated_people_to_file(filename)
         else:
             dojo.print_unallocated_people()
+
+    @docopt_cmd
+    def do_reallocate_person(self, args):
+        """Usage: reallocate_person <person_identifier> <new_room_name>"""
+        name = args["<person_identifier>"]
+        new_room_name = args["<new_room_name>"]
+        try:
+            dojo.reallocate_person(name, new_room_name)
+        except StaffCantBeAssignedToLivingspace as e:
+            print e
 
     def do_quit(self, arg):
         """Quits out of Interactive Mode."""

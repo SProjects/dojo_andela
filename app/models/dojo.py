@@ -235,14 +235,17 @@ class Dojo(object):
     def _reassign_fellow_to_new_office(self, fellow, index, new_office):
         fellow.office = new_office
         self.fellows[index] = fellow
+        print "{} successfully reallocated to {}".format(fellow.name, fellow.office.name)
 
     def _reassign_fellow_to_new_livingspace(self, fellow, index, new_livingspace):
         fellow.livingspace = new_livingspace
         self.fellows[index] = fellow
+        print "{} successfully reallocated to {}".format(fellow.name, fellow.livingspace.name)
 
     def _reassign_staff_to_new_office(self, staff, index, new_office):
         staff.office = new_office
         self.staff[index] = staff
+        print "{} successfully reallocated to {}".format(staff.name, staff.office.name)
 
     def save_state(self):
         Office.save(self)

@@ -3,7 +3,7 @@ from sqlalchemy import *
 from sqlalchemy import create_engine, ForeignKey
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import relationship
 
 engine = create_engine("sqlite:///andela_dojo.db", echo=True)
 Base = declarative_base()
@@ -18,8 +18,8 @@ class Office(Base):
     name = Column(String, nullable=False)
     spaces = Column(Integer, nullable=False, default=6)
     created_at = Column(DateTime, default=datetime.datetime.now(eat_timezone))
-    fellows = relationship("Fellow", backref("office"))
-    staff = relationship("Staff", backref("office"))
+    fellows = relationship("Fellow", backref="office")
+    staff = relationship("Staff", backref="office")
 
     def __init__(self, name, spaces):
         self.name = name
@@ -33,7 +33,7 @@ class Livingspace(Base):
     name = Column(String, nullable=False)
     spaces = Column(Integer, nullable=False, default=4)
     created_at = Column(DateTime, default=datetime.datetime.now(eat_timezone))
-    fellows = relationship("Fellow", backref("livingspace"))
+    fellows = relationship("Fellow", backref="livingspace")
 
     def __init__(self, name, spaces):
         self.name = name

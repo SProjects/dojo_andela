@@ -230,3 +230,38 @@ class TestDojo(unittest.TestCase):
         mock_output_file_handle = fake_open()
         mock_output_file_handle.readlines.assert_called_with()
         self.assertListEqual(self.dojo.fellows, [fellow])
+
+    def test_reallocate_person_changes_fellow_to_another_office(self):
+        office1_name = 'office1'
+        office2_name = 'office2'
+        self.dojo.create_room([office1_name], self.office_room_type)
+        office1 = self.dojo.offices[office1_name]
+
+        fellow_name = "Fellow Name"
+        self.dojo.add_person(fellow_name, self.fellow_type, self.yes_livingspace)
+
+        self.dojo.create_room([office2_name], self.office_room_type)
+        office2 = self.dojo.offices[office2_name]
+
+        self.dojo.reallocate_person(fellow_name, office2_name)
+
+        self.assertNotEqual(self.dojo.fellows[0].office, office1)
+        self.assertEqual(self.dojo.fellows[0].office, office2)
+
+    def test_reallocate_person_changes_fellow_to_another_living_space(self):
+        livingspace1_name = 'livingspace1'
+        livingspace2_name = 'livingspace2'
+        self.dojo.create_room([livingspace1_name], self.livingspace_room_type)
+        livingspace1 = self.dojo.livingspaces[livingspace1_name]
+
+        fellow_name = "Fellow Name"
+        self.dojo.add_person(fellow_name, self.fellow_type, self.yes_livingspace)
+
+        self.dojo.create_room([livingspace2_name], self.livingspace_room_type)
+        livingspace2 = self.dojo.livingspaces[livingspace2_name]
+
+        self.dojo.reallocate_person(fellow_name, livingspace2_name)
+
+        self.assertNotEqual(self.dojo.fellows[0].livingspace, livingspace1)
+        self.assertEqual(self.dojo.fellows[0].livingspace, livingspace2)
+

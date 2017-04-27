@@ -194,3 +194,29 @@ class Dojo(object):
 
         return fellow_string + staff_string
 
+    def reallocate_person(self, identifier, new_room_name):
+        fellow = [fellow for fellow in self.fellows if identifier == fellow.name]
+        staff = [staff for staff in self.staff if identifier == staff.name]
+
+        new_office = self.offices.get(new_room_name, None)
+        new_livingspace = self.livingspaces.get(new_room_name, None)
+
+        if fellow and new_office:
+            fellow = fellow[0]
+            fellow_index = self.fellows.index(fellow)
+            self._reassign_fellow_to_new_office(fellow, fellow_index, new_office)
+        if fellow and new_livingspace:
+            fellow = fellow[0]
+            fellow_index = self.fellows.index(fellow)
+            self._reassign_fellow_to_new_livingspace(fellow, fellow_index, new_livingspace)
+
+    def _reassign_fellow_to_new_office(self, fellow, index, new_office):
+        fellow.office = new_office
+        self.fellows[index] = fellow
+
+    def _reassign_fellow_to_new_livingspace(self, fellow, index, new_livingspace):
+        fellow.livingspace = new_livingspace
+        self.fellows[index] = fellow
+
+
+

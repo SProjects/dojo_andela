@@ -7,4 +7,4 @@ class TestLivingspace(unittest.TestCase):
         self.livingspace = Livingspace('livingspace1')
 
     def test_office_responds_to_properties(self):
-        self.assertEqual(self.livingspace.name, 'livingspace1')
+        self.assertListEqual([self.livingspace.name, self.livingspace.spaces], ['livingspace1', 4])

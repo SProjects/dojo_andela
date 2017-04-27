@@ -2,6 +2,8 @@ import random, os
 from room import Office, Livingspace
 from person import Fellow, Staff
 from app.errors.dojo_errors import StaffCantBeAssignedToLivingspace
+from sqlalchemy.orm import sessionmaker
+from app.db.models import engine
 
 
 class Dojo(object):
@@ -20,6 +22,9 @@ class Dojo(object):
         self.full_livingspaces = {}
         self.fellows = []
         self.staff = []
+
+        Session = sessionmaker(bind=engine)
+        self.session = Session()
 
     def create_room(self, room_names, room_type):
         if not isinstance(room_names, list):
@@ -228,6 +233,22 @@ class Dojo(object):
     def _reassign_staff_to_new_office(self, staff, index, new_office):
         staff.office = new_office
         self.staff[index] = staff
+
+    def save_state(self):
+        Office.save(self)
+        Livingspace.save(self)
+        self.session.commit()
+
+        Fellow.save(self)
+        Staff.save(self)
+        self.session.commit()
+
+    def load_state(self):
+        Office.load(self)
+        Livingspace.load(self)
+        Fellow.load(self)
+        Staff.load(self)
+        return self
 
 
 

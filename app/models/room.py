@@ -42,7 +42,6 @@ class Office(Room):
             return office
         return None
 
-
     @staticmethod
     def save(dojo):
         session = dojo.session
@@ -62,7 +61,10 @@ class Office(Room):
             for db_office in db_offices:
                 office = Office(db_office.name)
                 office.spaces = db_office.spaces
-                dojo.offices[db_office.name] = office
+                if office.spaces != 0:
+                    dojo.offices[office.name] = office
+                else:
+                    dojo.full_offices[office.name] = office
         return dojo
 
 
@@ -114,5 +116,8 @@ class Livingspace(Room):
             for db_livingspace in db_livingspaces:
                 livingspace = Office(db_livingspace.name)
                 livingspace.spaces = db_livingspace.spaces
-                dojo.livingspaces[db_livingspace.name] = livingspace
+                if livingspace.spaces != 0:
+                    dojo.livingspaces[livingspace.name] = livingspace
+                else:
+                    dojo.full_livingspaces[livingspace.name] = livingspace
         return dojo

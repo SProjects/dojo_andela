@@ -2,6 +2,8 @@
 
 Usage:
     andela_dojo.py create <room_type> <room_name>...
+    andela_dojo.py add_person <person_name> (FELLOW | STAFF) [wants_accommodation]
+    andela_dojo.py print_room <room_name>
     andela_dojo.py -i | --interactive
     andela_dojo.py -h | --help
     andela_dojo.py --version
@@ -18,6 +20,7 @@ from app.models.dojo import Dojo
 
 
 dojo = Dojo("Andela", "Nairobi")
+dojo.load_state()
 
 
 def docopt_cmd(func):
@@ -63,6 +66,17 @@ class DojoInteractive(cmd.Cmd):
         room_type = args["<room_type>"].upper()
         room_names = args["<room_name>"]
         dojo.create_room(room_names, room_type)
+
+    @docopt_cmd
+    def do_add_person(self, args):
+        """Usage: add_person <person_name> <FELLOW|STAFF> [wants_accommodation]"""
+        print args
+
+    @docopt_cmd
+    def do_print_room(self, args):
+        """Usage: print_room <room_name>"""
+        room_name = args["<room_name>"]
+        dojo.print_people_in_room(room_name)
 
     def do_quit(self, arg):
         """Quits out of Interactive Mode."""

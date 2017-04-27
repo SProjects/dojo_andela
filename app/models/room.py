@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from app.db.models import Office as DbOffice, Livingspace as DbLivingspace, engine
+from app.db.models import Office as DBOffice, Livingspace as DBLivingspace, engine
 
 
 class Room(object):
@@ -35,14 +35,35 @@ class Office(Room):
         super(self.__class__, self).__init__(name, self.SPACES)
 
     @staticmethod
+    def create_from_db_object(db_office):
+        if db_office:
+            office = Office(db_office.name)
+            office.spaces = db_office.spaces
+            return office
+        return None
+
+
+    @staticmethod
     def save(dojo):
         session = dojo.session
 
         with session.no_autoflush:
             in_memory_offices = dojo.offices
             for _, in_memory_office in in_memory_offices.items():
-                db_office = DbOffice(in_memory_office.name, in_memory_office.spaces)
+                db_office = DBOffice(in_memory_office.name, in_memory_office.spaces)
                 session.add(db_office)
+
+    @staticmethod
+    def load(dojo):
+        session = dojo.session
+
+        with session.no_autoflush:
+            db_offices = session.query(DBOffice).all()
+            for db_office in db_offices:
+                office = Office(db_office.name)
+                office.spaces = db_office.spaces
+                dojo.offices[db_office.name] = office
+        return dojo
 
 
 class Livingspace(Room):
@@ -66,10 +87,30 @@ class Livingspace(Room):
                 occupant.wants_accommodation() and occupant.livingspace.name == self.name]
 
     @staticmethod
+    def create_from_db_object(db_livingspace):
+        if db_livingspace:
+            livingspace = Office(db_livingspace.name)
+            livingspace.spaces = db_livingspace.spaces
+            return livingspace
+        return None
+
+    @staticmethod
     def save(dojo):
         session = dojo.session
         with session.no_autoflush:
             in_memory_livingspaces = dojo.livingspaces
             for _, in_memory_livingspace in in_memory_livingspaces.items():
-                db_livingspace = DbLivingspace(in_memory_livingspace.name, in_memory_livingspace.spaces)
+                db_livingspace = DBLivingspace(in_memory_livingspace.name, in_memory_livingspace.spaces)
                 session.add(db_livingspace)
+
+    @staticmethod
+    def load(dojo):
+        session = dojo.session
+
+        with session.no_autoflush:
+            db_livingspaces = session.query(DBLivingspace).all()
+            for db_livingspace in db_livingspaces:
+                livingspace = Office(db_livingspace.name)
+                livingspace.spaces = db_livingspace.spaces
+                dojo.livingspaces[db_livingspace.name] = livingspace
+        return dojo

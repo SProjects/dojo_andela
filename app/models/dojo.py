@@ -139,22 +139,32 @@ class Dojo(object):
         return [staff for staff in self.staff if not staff.office]
 
     def print_allocated_people_to_file(self, filename):
+        result_string = self._generate_allocated_print_statement()
+
+        with open(filename, "w") as f:
+            f.write(result_string)
+
+    def _generate_allocated_print_statement(self):
         livingspaces = dict(list(self.full_livingspaces.items()) + list(self.livingspaces.items()))
         offices = dict(list(self.full_offices.items()) + list(self.offices.items()))
         occupants = self.staff + self.fellows
 
-        with open(filename, "w") as f:
-            for livingspace_name, livingspace in livingspaces.items():
-                f.write(livingspace_name.upper())
-                f.write("\n------------------------\n")
-                f.write(", ".join([occupant.name.upper() for occupant in livingspace.get_occupants(self.fellows)]))
-                f.write("\n\n")
+        livingspace_string = ''
+        for livingspace_name, livingspace in livingspaces.items():
+            livingspace_string += livingspace_name.upper()
+            livingspace_string += "\n------------------------\n"
+            livingspace_string += ", ".join(
+                [occupant.name.upper() for occupant in livingspace.get_occupants(self.fellows)])
+            livingspace_string += "\n\n"
 
-            for office_name, office in offices.items():
-                f.write(office_name.upper())
-                f.write("\n------------------------\n")
-                f.write(", ".join([occupant.name.upper() for occupant in office.get_occupants(occupants)]))
-                f.write("\n\n")
+        office_string = ''
+        for office_name, office in offices.items():
+            office_string += office_name.upper()
+            office_string += "\n------------------------\n"
+            office_string += ", ".join([occupant.name.upper() for occupant in office.get_occupants(occupants)])
+            office_string += "\n\n"
+
+        return livingspace_string + office_string
 
     def print_unallocated_people_to_file(self, filename):
         unallocated_fellows = self._unallocated_fellows()

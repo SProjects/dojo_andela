@@ -34,6 +34,7 @@ def io_value(io):
     """Value in io"""
     return io.getvalue().strip()
 
+
 """End citation"""
 
 
@@ -135,6 +136,7 @@ class TestDojo(unittest.TestCase):
 
             self.assertIn(fellow.name.upper(), io_value(io))
             self.assertIn(livingspace.name.upper(), io_value(io))
+
         with_io_divert(func)
 
     def test_print_allocated_people_prints_people_that_have_been_assigned_rooms(self):
@@ -155,6 +157,7 @@ class TestDojo(unittest.TestCase):
             self.assertIn(fellow.name.upper(), io_value(io))
             self.assertIn(livingspace.name.upper(), io_value(io))
             self.assertIn(office.name.upper(), io_value(io))
+
         with_io_divert(func)
 
     def test_print_unallocated_people_prints_people_who_have_not_been_assigned_one_or_all_rooms(self):
@@ -165,12 +168,33 @@ class TestDojo(unittest.TestCase):
             self.dojo.print_unallocated_people()
 
             self.assertIn(fellow.name.upper(), io_value(io))
+
         with_io_divert(func)
 
-    def test_print_allocated_people_to_file_is_called_with_filename(self):
-        with patch.object(Dojo, 'print_allocated_people_to_file', return_value=None) as mock_method:
-            dojo = Dojo('Andela', 'Nairobi')
-            dojo.print_allocated_people_to_file('output.txt')
-        mock_method.assert_called_once_with('output.txt')
+    @patch('__builtin__.open', new_callable=mock_open, create=True)
+    def test_print_allocated_people_to_file_prints_text_file_with_allocated_people(self, fake_open):
+        livingspace1 = 'livingspace1'
+        self.dojo.create_room([livingspace1], self.livingspace_room_type)
+        livingspace = self.dojo.livingspaces[livingspace1]
 
+        office1 = 'office1'
+        self.dojo.create_room([office1], self.office_room_type)
+        office = self.dojo.offices[office1]
 
+        self.dojo.add_person('Fellow Name', self.fellow_type, self.yes_livingspace)
+        fellow = self.dojo.fellows[0]
+
+        self.dojo.add_person('Staff Name', self.staff_type, self.no_livingspace)
+        staff = self.dojo.staff[0]
+
+        filename = 'output.txt'
+        expected_output = ''
+        expected_output += '{}\n------------------------\n{}\n\n'.format(livingspace.name.upper(), fellow.name.upper())
+        expected_output += '{}\n------------------------\n{}, {}\n\n'.format(office.name.upper(), staff.name.upper(),
+                                                                             fellow.name.upper())
+
+        self.dojo.print_allocated_people_to_file(filename)
+
+        fake_open.assert_called_once_with(filename, 'w')
+        mock_output_file_handle = fake_open()
+        mock_output_file_handle.write.assert_called_with(expected_output)

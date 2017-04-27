@@ -1,6 +1,7 @@
 from sqlalchemy.orm import sessionmaker
-from app.db.models import Fellow as DBFellow, Staff as DBStaff, engine
+from app.db.models import Fellow as DBFellow, Staff as DBStaff
 from app.db.models import Office as DBOffice, Livingspace as DBLivingspace
+from app.models.room import Office, Livingspace
 
 
 class Person(object):
@@ -47,6 +48,22 @@ class Fellow(Person):
                 db_fellow.livingspace = livingspace
                 session.add(db_fellow)
 
+    @staticmethod
+    def load(dojo):
+        session = dojo.session
+        with session.no_autoflush:
+            db_fellows = session.query(DBFellow).all()
+            for db_fellow in db_fellows:
+                fellow = Fellow(db_fellow.name, db_fellow.accommodation)
+                office = Office.create_from_db_object(db_fellow.office)
+                livingspace = Livingspace.create_from_db_object(db_fellow.livingspace)
+
+                fellow.office = office
+                fellow.livingspace = livingspace
+
+                dojo.fellows.append(fellow)
+        return dojo
+
 
 class Staff(Person):
     def __init__(self, name):
@@ -64,3 +81,16 @@ class Staff(Person):
                 db_staff = DBStaff(in_memory_staff.name)
                 db_staff.office = office
                 session.add(db_staff)
+
+    @staticmethod
+    def load(dojo):
+        session = dojo.session
+        with session.no_autoflush:
+            db_staff = session.query(DBStaff).all()
+            for db_staff in db_staff:
+                staff = Staff(db_staff.name)
+                office = Office.create_from_db_object(db_staff.office)
+                staff.office = office
+
+                dojo.staff.append(staff)
+        return dojo

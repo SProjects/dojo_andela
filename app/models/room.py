@@ -1,3 +1,8 @@
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from app.db.models import Office as DbOffice, Livingspace as DbLivingspace, engine
+
+
 class Room(object):
     def __init__(self, name, space):
         self.name = name
@@ -29,6 +34,16 @@ class Office(Room):
     def __init__(self, name):
         super(self.__class__, self).__init__(name, self.SPACES)
 
+    @staticmethod
+    def save(dojo):
+        session = dojo.session
+
+        with session.no_autoflush:
+            in_memory_offices = dojo.offices
+            for _, in_memory_office in in_memory_offices.items():
+                db_office = DbOffice(in_memory_office.name, in_memory_office.spaces)
+                session.add(db_office)
+
 
 class Livingspace(Room):
     SPACE = 4
@@ -49,3 +64,12 @@ class Livingspace(Room):
     def get_occupants(self, occupants):
         return [occupant for occupant in occupants if
                 occupant.wants_accommodation() and occupant.livingspace.name == self.name]
+
+    @staticmethod
+    def save(dojo):
+        session = dojo.session
+        with session.no_autoflush:
+            in_memory_livingspaces = dojo.livingspaces
+            for _, in_memory_livingspace in in_memory_livingspaces.items():
+                db_livingspace = DbLivingspace(in_memory_livingspace.name, in_memory_livingspace.spaces)
+                session.add(db_livingspace)

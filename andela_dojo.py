@@ -4,16 +4,20 @@ Usage:
     andela_dojo.py create <room_type> <room_name>...
     andela_dojo.py add_person <person_name> (FELLOW | STAFF) [wants_accommodation]
     andela_dojo.py print_room <room_name>
-    andela_dojo.py print_allocations [-o FILENAME]
-    andela_dojo.py print_unallocated [-o FILENAME]
+    andela_dojo.py print_allocations [--o=filename]
+    andela_dojo.py print_unallocated [-o=filename]
     andela_dojo.py reallocate_person <person_identifier> <new_room_name>
+    andela_dojo.py load_people
+    andela_dojo.py save_state [--db=sqlite_database]
+    andela_dojo.py load_state <sqlite_database>
     andela_dojo.py -i | --interactive
     andela_dojo.py -h | --help
     andela_dojo.py --version
 
 Options:
     -i --interactive  Interactive Mode
-    -o FILENAME --output=FILENAME   Provide output file [default: output.txt]
+    --o=filename   Provide output file [default: output.txt]
+    --db=sqlite_database    Pass database name as parameter [default: andela_dojo.db]
     -h --help    show help
     --version    show version of the application
 """
@@ -25,7 +29,6 @@ from app.errors.dojo_errors import StaffCantBeAssignedToLivingspace
 
 
 dojo = Dojo("Andela", "Nairobi")
-dojo.load_state()
 
 
 def docopt_cmd(func):
@@ -85,20 +88,18 @@ class DojoInteractive(cmd.Cmd):
 
     @docopt_cmd
     def do_print_allocations(self, args):
-        """Usage: print_allocations [-o FILENAME]"""
-        output_to_file = args["-o"]
-        filename = args["FILENAME"]
-        if output_to_file and filename:
+        """Usage: print_allocations [--o=filename]"""
+        filename = args["--o"]
+        if filename:
             dojo.print_allocated_people_to_file(filename)
         else:
             dojo.print_allocated_people()
 
     @docopt_cmd
     def do_print_unallocated(self, args):
-        """Usage: print_unallocated [-o FILENAME]"""
-        output_to_file = args["-o"]
-        filename = args["FILENAME"]
-        if output_to_file and filename:
+        """Usage: print_unallocated [--o=filename]"""
+        filename = args["--o"]
+        if filename:
             dojo.print_unallocated_people_to_file(filename)
         else:
             dojo.print_unallocated_people()
@@ -117,6 +118,28 @@ class DojoInteractive(cmd.Cmd):
     def do_load_people(self, args):
         """Usage: load_people"""
         dojo.add_people_from_file()
+
+    @docopt_cmd
+    def do_save_state(self, args):
+        """Usage: save_state [--db=sqlite_database]"""
+        database_name = args['--db']
+        if database_name:
+            pass
+        else:
+            dojo.save_state()
+            dojo.reset()
+            dojo.load_state()
+
+    @docopt_cmd
+    def do_load_state(self, args):
+        """Usage: load_state <sqlite_database>"""
+        database_name = args['<sqlite_database>']
+        default_db = 'andela_dojo.db'
+        if database_name != default_db:
+            pass
+        else:
+            dojo.reset()
+            dojo.load_state()
 
     def do_quit(self, arg):
         """Quits out of Interactive Mode."""

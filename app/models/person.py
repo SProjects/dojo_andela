@@ -8,9 +8,13 @@ class Person(object):
     def __init__(self, name, office):
         self.name = name
         self.office = office
+        self.saved = False
 
     def __eq__(self, other):
         return self.name == other.name
+
+    def is_saved(self):
+        return self.saved
 
     def get_office_from_db(self, session, office):
         with session.no_autoflush:
@@ -40,10 +44,13 @@ class Fellow(Person):
                 in_memory_livingspace = in_memory_fellow.livingspace
 
                 office = in_memory_fellow.get_office_from_db(session, in_memory_office) if in_memory_office else None
-                livingspace = in_memory_fellow.\
-                    get_livingspace_from_db(session,in_memory_livingspace) if in_memory_livingspace else None
+                livingspace = in_memory_fellow. \
+                    get_livingspace_from_db(session, in_memory_livingspace) if in_memory_livingspace else None
 
-                db_fellow = DBFellow(in_memory_fellow.name, in_memory_fellow.accommodation)
+                db_fellow = DBFellow(in_memory_fellow.name, in_memory_fellow.accommodation)\
+                    if not in_memory_fellow.is_saved() \
+                    else session.query(DBFellow).filter_by(name=in_memory_fellow.name).one()
+
                 db_fellow.office = office
                 db_fellow.livingspace = livingspace
                 session.add(db_fellow)
@@ -60,6 +67,7 @@ class Fellow(Person):
                 livingspace = Livingspace.create_from_db_object(db_fellow.livingspace)
 
                 fellow.office = office
+                fellow.saved = True
                 fellow.livingspace = livingspace
 
                 dojo.fellows.append(fellow)
@@ -80,7 +88,9 @@ class Staff(Person):
                 in_memory_office = in_memory_staff.office
                 office = in_memory_staff.get_office_from_db(session, in_memory_office) if in_memory_office else None
 
-                db_staff = DBStaff(in_memory_staff.name)
+                db_staff = DBStaff(in_memory_staff.name) if not in_memory_staff.is_saved() \
+                    else session.query(DBStaff).filter_by(name=in_memory_staff.name).one()
+
                 db_staff.office = office
                 session.add(db_staff)
             print "Saved {} staff.".format(len(in_memory_staffs))
@@ -94,6 +104,7 @@ class Staff(Person):
                 staff = Staff(db_staff.name)
                 office = Office.create_from_db_object(db_staff.office)
                 staff.office = office
+                staff.saved = True
 
                 dojo.staff.append(staff)
             print "{} staff loaded.".format(len(dojo.staff))

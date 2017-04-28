@@ -56,6 +56,7 @@ class Office(Room):
                 db_office = DBOffice(in_memory_office.name, in_memory_office.spaces) \
                     if not in_memory_office.is_saved() else \
                     session.query(DBOffice).filter_by(name=in_memory_office.name).one()
+                db_office.spaces = in_memory_office.spaces
 
                 session.add(db_office)
             print "Saved {} offices.".format(len(in_memory_offices))
@@ -68,7 +69,7 @@ class Office(Room):
             db_offices = session.query(DBOffice).all()
             for db_office in db_offices:
                 office = Office(db_office.name)
-                office.spaces = db_office.spaces
+                office.spaces = Office.SPACES - len(db_office.fellows + db_office.staff)
                 office.saved = True
                 if office.spaces != 0:
                     dojo.offices[office.name] = office
@@ -117,6 +118,7 @@ class Livingspace(Room):
                 db_livingspace = DBLivingspace(in_memory_livingspace.name, in_memory_livingspace.spaces) \
                     if not in_memory_livingspace.is_saved() else \
                     session.query(DBLivingspace).filter_by(name=in_memory_livingspace.name).one()
+                db_livingspace.spaces = in_memory_livingspace.spaces
 
                 session.add(db_livingspace)
             print "Saved {} livingspaces".format(len(in_memory_livingspaces))
@@ -129,7 +131,7 @@ class Livingspace(Room):
             db_livingspaces = session.query(DBLivingspace).all()
             for db_livingspace in db_livingspaces:
                 livingspace = Office(db_livingspace.name)
-                livingspace.spaces = db_livingspace.spaces
+                livingspace.spaces = Livingspace.SPACE - len(db_livingspace.fellows)
                 livingspace.saved = True
                 if livingspace.spaces != 0:
                     dojo.livingspaces[livingspace.name] = livingspace

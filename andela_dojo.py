@@ -80,7 +80,7 @@ class DojoInteractive(cmd.Cmd):
     @docopt_cmd
     def do_add_person(self, args):
         """Usage: add_person <first_name> <last_name> (TYPE) [<wants_accommodation>]"""
-        name = " ".join([args["<last_name>"], args["<first_name>"]])
+        name = " ".join([args["<first_name>"], args["<last_name>"]])
         person_type = args["TYPE"]
         want_accommodation = args["<wants_accommodation>"] if args["<wants_accommodation>"] else 'N'
         dojo.add_person(name, person_type.upper(), want_accommodation)

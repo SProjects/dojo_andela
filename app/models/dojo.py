@@ -73,14 +73,20 @@ class Dojo(object):
         fellow = Fellow(name, accommodation)
         fellow = self._assign_office(fellow)
         fellow = self._assign_livingspace(fellow) if fellow.wants_accommodation() else fellow
-        self.fellows.append(fellow)
-        print "Fellow {} has been successfully added.".format(fellow.name)
+        if fellow in self.fellows:
+            print "Fellow {} already exists".format(fellow.name)
+        else:
+            self.fellows.append(fellow)
+            print "Fellow {} has been successfully added.".format(fellow.name)
 
     def _add_staff(self, name):
         staff = Staff(name)
         staff = self._assign_office(staff)
-        self.staff.append(staff)
-        print "Staff {} has been successfully added.".format(staff.name)
+        if staff in self.staff:
+            print "Staff {} already exists.".format(staff.name)
+        else:
+            self.staff.append(staff)
+            print "Staff {} has been successfully added.".format(staff.name)
 
     def _update_available_livingspaces(self):
         self.livingspaces = {livingspace_name: livingspace for livingspace_name, livingspace in

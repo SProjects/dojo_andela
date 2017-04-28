@@ -10,6 +10,7 @@ Usage:
     andela_dojo.py load_people
     andela_dojo.py save_state [--db=sqlite_database]
     andela_dojo.py load_state <sqlite_database>
+    andela_dojo.py reset_system
     andela_dojo.py -i | --interactive
     andela_dojo.py -h | --help
     andela_dojo.py --version
@@ -77,7 +78,7 @@ class DojoInteractive(cmd.Cmd):
 
     @docopt_cmd
     def do_add_person(self, args):
-        """Usage: add_person <person_name> <FELLOW|STAFF> [wants_accommodation]"""
+        """Usage: add_person <person_name> (FELLOW|STAFF) [wants_accommodation]"""
         print args
 
     @docopt_cmd
@@ -140,6 +141,11 @@ class DojoInteractive(cmd.Cmd):
         else:
             dojo.reset()
             dojo.load_state()
+
+    @docopt_cmd
+    def de_reset_system(self, args):
+        """Usage: reset_system"""
+        dojo.reset()
 
     def do_quit(self, arg):
         """Quits out of Interactive Mode."""

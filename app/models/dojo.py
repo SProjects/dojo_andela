@@ -257,11 +257,23 @@ class Dojo(object):
         self.session.commit()
 
     def load_state(self):
+        print "Loading data...."
         Office.load(self)
         Livingspace.load(self)
         Fellow.load(self)
         Staff.load(self)
         return self
 
+    def reset(self):
+        print
+        print "Resetting system...."
+        self.offices = {}
+        self.full_offices = {}
+        self.livingspaces = {}
+        self.full_livingspaces = {}
+        self.fellows = []
+        self.staff = []
+        print "Reset complete...."
+        print
 
 

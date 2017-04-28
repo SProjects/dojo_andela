@@ -51,6 +51,7 @@ class Office(Room):
             for _, in_memory_office in in_memory_offices.items():
                 db_office = DBOffice(in_memory_office.name, in_memory_office.spaces)
                 session.add(db_office)
+            print "Saved {} offices.".format(len(in_memory_offices))
 
     @staticmethod
     def load(dojo):
@@ -65,6 +66,7 @@ class Office(Room):
                     dojo.offices[office.name] = office
                 else:
                     dojo.full_offices[office.name] = office
+            print "{} offices loaded".format(len(db_offices))
         return dojo
 
 
@@ -106,6 +108,7 @@ class Livingspace(Room):
             for _, in_memory_livingspace in in_memory_livingspaces.items():
                 db_livingspace = DBLivingspace(in_memory_livingspace.name, in_memory_livingspace.spaces)
                 session.add(db_livingspace)
+            print "Saved {} livingspaces".format(len(in_memory_livingspaces))
 
     @staticmethod
     def load(dojo):
@@ -120,4 +123,5 @@ class Livingspace(Room):
                     dojo.livingspaces[livingspace.name] = livingspace
                 else:
                     dojo.full_livingspaces[livingspace.name] = livingspace
+            print "{} livingspaces loaded".format(len(db_livingspaces))
         return dojo

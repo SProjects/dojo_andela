@@ -47,6 +47,7 @@ class Fellow(Person):
                 db_fellow.office = office
                 db_fellow.livingspace = livingspace
                 session.add(db_fellow)
+            print "Saved {} fellows.".format(len(in_memory_fellows))
 
     @staticmethod
     def load(dojo):
@@ -62,6 +63,7 @@ class Fellow(Person):
                 fellow.livingspace = livingspace
 
                 dojo.fellows.append(fellow)
+            print "{} fellows loaded".format(len(dojo.fellows))
         return dojo
 
 
@@ -73,14 +75,15 @@ class Staff(Person):
     def save(dojo):
         session = dojo.session
         with session.no_autoflush:
-            in_memory_staff = dojo.staff
-            for in_memory_staff in in_memory_staff:
+            in_memory_staffs = dojo.staff
+            for in_memory_staff in in_memory_staffs:
                 in_memory_office = in_memory_staff.office
                 office = in_memory_staff.get_office_from_db(session, in_memory_office) if in_memory_office else None
 
                 db_staff = DBStaff(in_memory_staff.name)
                 db_staff.office = office
                 session.add(db_staff)
+            print "Saved {} staff.".format(len(in_memory_staffs))
 
     @staticmethod
     def load(dojo):
@@ -93,4 +96,5 @@ class Staff(Person):
                 staff.office = office
 
                 dojo.staff.append(staff)
+            print "{} staff loaded.".format(len(dojo.staff))
         return dojo

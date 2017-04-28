@@ -74,13 +74,13 @@ class DojoInteractive(cmd.Cmd):
     def do_create_room(self, args):
         """Usage: create <room_type> <room_name>..."""
         room_type = args["<room_type>"].upper()
-        room_names = args["<room_name>"]
-        dojo.create_room(room_names.upper(), room_type)
+        room_names = [room_name.upper() for room_name in args["<room_name>"]]
+        dojo.create_room(room_names, room_type)
 
     @docopt_cmd
     def do_add_person(self, args):
-        """Usage: add_person <first_name> <last_name> (TYPE) [<wants_accommodation>]"""
-        name = " ".join([args["<first_name>"], args["<last_name>"]])
+        """Usage: add_person <last_name> <first_name> (TYPE) [<wants_accommodation>]"""
+        name = " ".join([args["<last_name>"], args["<first_name>"]])
         person_type = args["TYPE"]
         want_accommodation = args["<wants_accommodation>"] if args["<wants_accommodation>"] else 'N'
         dojo.add_person(name.upper(), person_type.upper(), want_accommodation)
@@ -88,7 +88,7 @@ class DojoInteractive(cmd.Cmd):
     @docopt_cmd
     def do_print_room(self, args):
         """Usage: print_room <room_name>"""
-        room_name = args["<room_name>"]
+        room_name = args["<room_name>"].upper()
         dojo.print_people_in_room(room_name)
 
     @docopt_cmd
@@ -111,9 +111,9 @@ class DojoInteractive(cmd.Cmd):
 
     @docopt_cmd
     def do_reallocate_person(self, args):
-        """Usage: reallocate_person <first_name> <last_name> <new_room_name>"""
-        name = " ".join([args["<last_name>"], args["<first_name>"]])
-        new_room_name = args["<new_room_name>"]
+        """Usage: reallocate_person <last_name> <first_name> <new_room_name>"""
+        name = " ".join([args["<last_name>"].upper(), args["<first_name>"].upper()])
+        new_room_name = args["<new_room_name>"].upper()
         try:
             dojo.reallocate_person(name, new_room_name)
         except StaffCantBeAssignedToLivingspace as e:

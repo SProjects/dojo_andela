@@ -75,7 +75,7 @@ class DojoInteractive(cmd.Cmd):
         """Usage: create <room_type> <room_name>..."""
         room_type = args["<room_type>"].upper()
         room_names = args["<room_name>"]
-        dojo.create_room(room_names, room_type)
+        dojo.create_room(room_names.upper(), room_type)
 
     @docopt_cmd
     def do_add_person(self, args):
@@ -83,7 +83,7 @@ class DojoInteractive(cmd.Cmd):
         name = " ".join([args["<first_name>"], args["<last_name>"]])
         person_type = args["TYPE"]
         want_accommodation = args["<wants_accommodation>"] if args["<wants_accommodation>"] else 'N'
-        dojo.add_person(name, person_type.upper(), want_accommodation)
+        dojo.add_person(name.upper(), person_type.upper(), want_accommodation)
 
     @docopt_cmd
     def do_print_room(self, args):

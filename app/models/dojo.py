@@ -34,16 +34,19 @@ class Dojo(object):
             self._add_offices(room_names)
         if room_type == self.LIVINGSPACE_ROOM_TYPE:
             self._add_livingspaces(room_names)
+        self.assign_rooms_to_unallocated_people()
 
     def _add_offices(self, names):
         for name in names:
             if name not in self.offices or name not in self.full_offices:
                 self.offices[name] = Office(name)
+                print "An office called {} has successfully been created.".format(name)
 
     def _add_livingspaces(self, names):
         for name in names:
             if name not in self.livingspaces or name not in self.full_livingspaces:
                 self.livingspaces[name] = Livingspace(name)
+                print "A livingspace called {} has successfully been created.".format(name)
 
     def add_person(self, name, person_type, accommodation):
         if not isinstance(name, str):
@@ -70,12 +73,20 @@ class Dojo(object):
         fellow = Fellow(name, accommodation)
         fellow = self._assign_office(fellow)
         fellow = self._assign_livingspace(fellow) if fellow.wants_accommodation() else fellow
-        self.fellows.append(fellow)
+        if fellow in self.fellows:
+            print "Fellow {} already exists".format(fellow.name)
+        else:
+            self.fellows.append(fellow)
+            print "Fellow {} has been successfully added.".format(fellow.name)
 
     def _add_staff(self, name):
         staff = Staff(name)
         staff = self._assign_office(staff)
-        self.staff.append(staff)
+        if staff in self.staff:
+            print "Staff {} already exists.".format(staff.name)
+        else:
+            self.staff.append(staff)
+            print "Staff {} has been successfully added.".format(staff.name)
 
     def _update_available_livingspaces(self):
         self.livingspaces = {livingspace_name: livingspace for livingspace_name, livingspace in
@@ -115,6 +126,22 @@ class Dojo(object):
             occupants = self.staff + self.fellows
             office.print_occupants(occupants)
 
+    def assign_rooms_to_unallocated_people(self):
+        unallocated_fellows = self._unallocated_fellows()
+        unallocated_staff = self._unallocated_staff()
+
+        for fellow in unallocated_fellows:
+            self._assign_office(fellow)
+            self._update_available_offices()
+
+            if fellow.wants_accommodation():
+                self._assign_livingspace(fellow)
+                self._update_available_livingspaces()
+
+        for staff in unallocated_staff:
+            self._assign_office(staff)
+            self._update_available_offices()
+
     def print_allocated_people(self):
         spaces = dict(list(self.full_livingspaces.items()) + list(self.livingspaces.items()) +
                       list(self.full_offices.items()) + list(self.offices.items()))
@@ -151,6 +178,9 @@ class Dojo(object):
         with open(file_path, "w") as f:
             f.write(result_string)
 
+        if os.path.isfile(file_path):
+            print "{} file has been successfully created.".format(filename)
+
     def _generate_allocated_print_statement(self):
         livingspaces = dict(list(self.full_livingspaces.items()) + list(self.livingspaces.items()))
         offices = dict(list(self.full_offices.items()) + list(self.offices.items()))
@@ -179,6 +209,9 @@ class Dojo(object):
 
         with open(file_path, "w") as f:
             f.write(result_string)
+
+        if os.path.isfile(file_path):
+            print "{} file has been successfully created.".format(filename)
 
     def _generate_unallocated_print_statement(self):
         unallocated_fellows = self._unallocated_fellows()
@@ -225,14 +258,17 @@ class Dojo(object):
     def _reassign_fellow_to_new_office(self, fellow, index, new_office):
         fellow.office = new_office
         self.fellows[index] = fellow
+        print "{} successfully reallocated to {}".format(fellow.name, fellow.office.name)
 
     def _reassign_fellow_to_new_livingspace(self, fellow, index, new_livingspace):
         fellow.livingspace = new_livingspace
         self.fellows[index] = fellow
+        print "{} successfully reallocated to {}".format(fellow.name, fellow.livingspace.name)
 
     def _reassign_staff_to_new_office(self, staff, index, new_office):
         staff.office = new_office
         self.staff[index] = staff
+        print "{} successfully reallocated to {}".format(staff.name, staff.office.name)
 
     def save_state(self):
         Office.save(self)
@@ -244,11 +280,23 @@ class Dojo(object):
         self.session.commit()
 
     def load_state(self):
+        print "Loading data...."
         Office.load(self)
         Livingspace.load(self)
         Fellow.load(self)
         Staff.load(self)
         return self
 
+    def reset(self):
+        print
+        print "Resetting system...."
+        self.offices = {}
+        self.full_offices = {}
+        self.livingspaces = {}
+        self.full_livingspaces = {}
+        self.fellows = []
+        self.staff = []
+        print "Reset complete...."
+        print
 
 

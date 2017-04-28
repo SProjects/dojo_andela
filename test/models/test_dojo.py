@@ -125,6 +125,32 @@ class TestDojo(unittest.TestCase):
         self.dojo.add_person('Fellow Name', self.fellow_type, self.yes_livingspace)
         self.assertEqual(self.dojo.fellows[0].livingspace, None)
 
+    def test_fellow_is_not_assigned_a_livingspace_if_he_does_not_want_one(self):
+        livingspace1 = 'livingspace1'
+        self.dojo.create_room([livingspace1], self.livingspace_room_type)
+
+        self.dojo.add_person('Fellow Name', self.fellow_type, self.no_livingspace)
+        self.assertEqual(self.dojo.fellows[0].livingspace, None)
+
+    def test_unallocated_fellow_is_assigned_space_when_new_space_is_created(self):
+        self.dojo.add_person('Fellow Name', self.fellow_type, self.yes_livingspace)
+        fellow = self.dojo.fellows[0]
+
+        self.dojo.add_person('Staff Name', self.staff_type, self.no_livingspace)
+        staff = self.dojo.staff[0]
+
+        livingspace1_name = 'livingspace1'
+        self.dojo.create_room([livingspace1_name], self.livingspace_room_type)
+        livingspace1 = self.dojo.livingspaces[livingspace1_name]
+
+        office_name = 'office1'
+        self.dojo.create_room([office_name], self.office_room_type)
+        office1 = self.dojo.offices[office_name]
+
+        self.assertEqual(fellow.office, office1)
+        self.assertEqual(fellow.livingspace, livingspace1)
+        self.assertEqual(staff.office, office1)
+
     def test_print_people_in_room_prints_people_assigned_to_a_room(self):
         def func(io):
             livingspace1 = 'livingspace1'
@@ -219,11 +245,12 @@ class TestDojo(unittest.TestCase):
         mock_output_file_handle = fake_open()
         mock_output_file_handle.write.assert_called_with(expected_output)
 
-    @patch('__builtin__.open', new_callable=mock_open, read_data='FELLOW NAME FELLOW Y', create=True)
+    @patch('__builtin__.open', new_callable=mock_open, read_data='FELLOW NAME FELLOW Y\nSTAFF NAME STAFF', create=True)
     def test_add_people_from_file_add_new_people_from_a_formatted_input_text_file(self, fake_open):
         filename = 'input.txt'
         file_path = self.ROOT_DIR + '/../../files/'+filename
         fellow = Fellow('FELLOW NAME', self.yes_livingspace)
+        staff = Staff('STAFF NAME')
 
         self.dojo.add_people_from_file()
 
@@ -231,6 +258,7 @@ class TestDojo(unittest.TestCase):
         mock_output_file_handle = fake_open()
         mock_output_file_handle.readlines.assert_called_with()
         self.assertListEqual(self.dojo.fellows, [fellow])
+        self.assertListEqual(self.dojo.staff, [staff])
 
     def test_reallocate_person_changes_fellow_to_another_office(self):
         office1_name = 'office1'

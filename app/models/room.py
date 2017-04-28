@@ -1,20 +1,29 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from app.db.models import Office as DBOffice, Livingspace as DBLivingspace, engine
+from app.db.models import Office as DBOffice, Livingspace as DBLivingspace
 
 
 class Room(object):
     def __init__(self, name, space):
         self.name = name
         self.spaces = space
+        self.saved = False
 
     def __eq__(self, other):
         return self.name == other.name
 
+    def is_saved(self):
+        return self.saved
+
     def assign_person_space(self, person):
         person.office = self
         self.spaces -= 1
+        print "{} has been allocated the office {}".format(person.name, self.name)
         return person
+
+    def assign_fellow_space(self, fellow):
+        fellow.livingspace = self
+        self.spaces -= 1
+        print "{} has been allocated the livingspace {}".format(fellow.name, self.name)
+        return fellow
 
     def has_space(self):
         return self.spaces != 0
@@ -23,6 +32,7 @@ class Room(object):
         print self.name.upper()
         print "--------------------------"
         print ", ".join([occupant.name.upper() for occupant in self.get_occupants(occupants)])
+        print
 
     def get_occupants(self, occupants):
         return [occupant for occupant in occupants if occupant.office.name == self.name]
@@ -42,7 +52,6 @@ class Office(Room):
             return office
         return None
 
-
     @staticmethod
     def save(dojo):
         session = dojo.session
@@ -50,8 +59,13 @@ class Office(Room):
         with session.no_autoflush:
             in_memory_offices = dojo.offices
             for _, in_memory_office in in_memory_offices.items():
-                db_office = DBOffice(in_memory_office.name, in_memory_office.spaces)
+                db_office = DBOffice(in_memory_office.name, in_memory_office.spaces) \
+                    if not in_memory_office.is_saved() else \
+                    session.query(DBOffice).filter_by(name=in_memory_office.name).one()
+                db_office.spaces = in_memory_office.spaces
+
                 session.add(db_office)
+            print "Saved {} offices.".format(len(in_memory_offices))
 
     @staticmethod
     def load(dojo):
@@ -61,8 +75,13 @@ class Office(Room):
             db_offices = session.query(DBOffice).all()
             for db_office in db_offices:
                 office = Office(db_office.name)
-                office.spaces = db_office.spaces
-                dojo.offices[db_office.name] = office
+                office.spaces = Office.SPACES - len(db_office.fellows + db_office.staff)
+                office.saved = True
+                if office.spaces != 0:
+                    dojo.offices[office.name] = office
+                else:
+                    dojo.full_offices[office.name] = office
+            print "{} offices loaded".format(len(db_offices))
         return dojo
 
 
@@ -72,15 +91,11 @@ class Livingspace(Room):
     def __init__(self, name):
         super(self.__class__, self).__init__(name, self.SPACE)
 
-    def assign_fellow_space(self, fellow):
-        fellow.livingspace = self
-        self.spaces -= 1
-        return fellow
-
     def print_occupants(self, occupants):
         print self.name.upper()
         print "--------------------------"
         print ", ".join([occupant.name.upper() for occupant in self.get_occupants(occupants)])
+        print
 
     def get_occupants(self, occupants):
         return [occupant for occupant in occupants if
@@ -100,8 +115,13 @@ class Livingspace(Room):
         with session.no_autoflush:
             in_memory_livingspaces = dojo.livingspaces
             for _, in_memory_livingspace in in_memory_livingspaces.items():
-                db_livingspace = DBLivingspace(in_memory_livingspace.name, in_memory_livingspace.spaces)
+                db_livingspace = DBLivingspace(in_memory_livingspace.name, in_memory_livingspace.spaces) \
+                    if not in_memory_livingspace.is_saved() else \
+                    session.query(DBLivingspace).filter_by(name=in_memory_livingspace.name).one()
+                db_livingspace.spaces = in_memory_livingspace.spaces
+
                 session.add(db_livingspace)
+            print "Saved {} livingspaces".format(len(in_memory_livingspaces))
 
     @staticmethod
     def load(dojo):
@@ -111,6 +131,11 @@ class Livingspace(Room):
             db_livingspaces = session.query(DBLivingspace).all()
             for db_livingspace in db_livingspaces:
                 livingspace = Office(db_livingspace.name)
-                livingspace.spaces = db_livingspace.spaces
-                dojo.livingspaces[db_livingspace.name] = livingspace
+                livingspace.spaces = Livingspace.SPACE - len(db_livingspace.fellows)
+                livingspace.saved = True
+                if livingspace.spaces != 0:
+                    dojo.livingspaces[livingspace.name] = livingspace
+                else:
+                    dojo.full_livingspaces[livingspace.name] = livingspace
+            print "{} livingspaces loaded".format(len(db_livingspaces))
         return dojo

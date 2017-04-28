@@ -19,6 +19,12 @@ class Room(object):
         print "{} has been allocated the office {}".format(person.name, self.name)
         return person
 
+    def assign_fellow_space(self, fellow):
+        fellow.livingspace = self
+        self.spaces -= 1
+        print "{} has been allocated the livingspace {}".format(fellow.name, self.name)
+        return fellow
+
     def has_space(self):
         return self.spaces != 0
 
@@ -84,12 +90,6 @@ class Livingspace(Room):
 
     def __init__(self, name):
         super(self.__class__, self).__init__(name, self.SPACE)
-
-    def assign_fellow_space(self, fellow):
-        fellow.livingspace = self
-        self.spaces -= 1
-        print "{} has been allocated the livingspace {}".format(fellow.name, self.name)
-        return fellow
 
     def print_occupants(self, occupants):
         print self.name.upper()

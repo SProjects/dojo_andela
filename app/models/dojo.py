@@ -34,6 +34,7 @@ class Dojo(object):
             self._add_offices(room_names)
         if room_type == self.LIVINGSPACE_ROOM_TYPE:
             self._add_livingspaces(room_names)
+        self.assign_rooms_to_unallocated_people()
 
     def _add_offices(self, names):
         for name in names:
@@ -118,6 +119,22 @@ class Dojo(object):
             office = offices[room_name]
             occupants = self.staff + self.fellows
             office.print_occupants(occupants)
+
+    def assign_rooms_to_unallocated_people(self):
+        unallocated_fellows = self._unallocated_fellows()
+        unallocated_staff = self._unallocated_staff()
+
+        for fellow in unallocated_fellows:
+            self._assign_office(fellow)
+            self._update_available_offices()
+
+            if fellow.wants_accommodation():
+                self._assign_livingspace(fellow)
+                self._update_available_livingspaces()
+
+        for staff in unallocated_staff:
+            self._assign_office(staff)
+            self._update_available_offices()
 
     def print_allocated_people(self):
         spaces = dict(list(self.full_livingspaces.items()) + list(self.livingspaces.items()) +

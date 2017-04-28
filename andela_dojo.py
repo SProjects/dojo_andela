@@ -2,14 +2,15 @@
 
 Usage:
     andela_dojo.py create <room_type> <room_name>...
-    andela_dojo.py add_person <person_name> (FELLOW | STAFF) [wants_accommodation]
+    andela_dojo.py add_person <first_name> <last_name> (TYPE) [wants_accommodation]
     andela_dojo.py print_room <room_name>
     andela_dojo.py print_allocations [--o=filename]
     andela_dojo.py print_unallocated [-o=filename]
-    andela_dojo.py reallocate_person <person_identifier> <new_room_name>
+    andela_dojo.py reallocate_person <first_name> <last_name> <new_room_name>
     andela_dojo.py load_people
     andela_dojo.py save_state [--db=sqlite_database]
     andela_dojo.py load_state <sqlite_database>
+    andela_dojo.py assign_rooms
     andela_dojo.py reset_system
     andela_dojo.py -i | --interactive
     andela_dojo.py -h | --help
@@ -78,8 +79,11 @@ class DojoInteractive(cmd.Cmd):
 
     @docopt_cmd
     def do_add_person(self, args):
-        """Usage: add_person <person_name> (FELLOW|STAFF) [wants_accommodation]"""
-        print args
+        """Usage: add_person <first_name> <last_name> (TYPE) [<wants_accommodation>]"""
+        name = " ".join([args["<last_name>"], args["<first_name>"]])
+        person_type = args["TYPE"]
+        want_accommodation = args["<wants_accommodation>"] if args["<wants_accommodation>"] else 'N'
+        dojo.add_person(name, person_type.upper(), want_accommodation)
 
     @docopt_cmd
     def do_print_room(self, args):
@@ -107,8 +111,8 @@ class DojoInteractive(cmd.Cmd):
 
     @docopt_cmd
     def do_reallocate_person(self, args):
-        """Usage: reallocate_person <person_identifier> <new_room_name>"""
-        name = args["<person_identifier>"]
+        """Usage: reallocate_person <first_name> <last_name> <new_room_name>"""
+        name = " ".join([args["<last_name>"], args["<first_name>"]])
         new_room_name = args["<new_room_name>"]
         try:
             dojo.reallocate_person(name, new_room_name)
@@ -143,7 +147,12 @@ class DojoInteractive(cmd.Cmd):
             dojo.load_state()
 
     @docopt_cmd
-    def de_reset_system(self, args):
+    def do_assign_rooms(self, args):
+        """Usage: assign_rooms"""
+        dojo.assign_rooms_to_unallocated_people()
+
+    @docopt_cmd
+    def do_reset_system(self, args):
         """Usage: reset_system"""
         dojo.reset()
 

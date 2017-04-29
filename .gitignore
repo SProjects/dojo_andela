@@ -3,3 +3,4 @@
 test/models/output.txt
 test/models/andela_dojo.db
 .coverage
+cover

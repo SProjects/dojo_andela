@@ -1,11 +1,10 @@
 import datetime, pytz
 from sqlalchemy import *
-from sqlalchemy import create_engine, ForeignKey
+from sqlalchemy import ForeignKey
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
-engine = create_engine("sqlite:///andela_dojo.db", echo=False)
 Base = declarative_base()
 
 eat_timezone = pytz.timezone('Africa/Nairobi')
@@ -65,8 +64,5 @@ class Staff(Base):
 
     def __init__(self, name):
         self.name = name
-
-
-Base.metadata.create_all(engine)
 
 

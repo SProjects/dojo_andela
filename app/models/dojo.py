@@ -2,8 +2,6 @@ import random, os
 from room import Office, Livingspace
 from person import Fellow, Staff
 from app.errors.dojo_errors import StaffCantBeAssignedToLivingspace
-from sqlalchemy.orm import sessionmaker
-from app.db.models import engine
 
 
 class Dojo(object):
@@ -22,9 +20,7 @@ class Dojo(object):
         self.full_livingspaces = {}
         self.fellows = []
         self.staff = []
-
-        Session = sessionmaker(bind=engine)
-        self.session = Session()
+        self.session = None
 
     def create_room(self, room_names, room_type):
         if not isinstance(room_names, list):

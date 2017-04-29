@@ -2,6 +2,7 @@ ANDELA DOJO
 ===========
 
 **Introduction**
+
 Andela Dojo is a commandline application that creates offices and livingspaces at the Dojo and randomly assigns them to the 
 Dojo's available space. When commanded, the application can store this data into either the default sqlite database or 
 one whose name is supplied by the user of the application.

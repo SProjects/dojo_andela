@@ -1,5 +1,4 @@
 .idea
 *.pyc
 test/models/output.txt
-files/output.txt
 test/models/andela_dojo.db

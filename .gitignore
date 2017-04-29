@@ -2,5 +2,4 @@
 *.pyc
 test/models/output.txt
 files/output.txt
-andela_dojo.db
 test/models/andela_dojo.db

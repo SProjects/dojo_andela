@@ -2,7 +2,7 @@
 
 Usage:
     andela_dojo.py create <room_type> <room_name>...
-    andela_dojo.py add_person <first_name> <last_name> (TYPE) [wants_accommodation]
+    andela_dojo.py add_person <first_name> <last_name> (TYPE) [<wants_accommodation>]
     andela_dojo.py print_room <room_name>
     andela_dojo.py print_allocations [--o=filename]
     andela_dojo.py print_unallocated [-o=filename]

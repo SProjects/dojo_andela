@@ -24,13 +24,16 @@ Options:
     --version    show version of the application
 """
 
-import sys, cmd
+import sys, cmd, os
 from docopt import docopt, DocoptExit
 from app.models.dojo import Dojo
 from app.errors.dojo_errors import StaffCantBeAssignedToLivingspace
+from app.db.utilities import Db
 
-
+ROOT = os.path.dirname(os.path.abspath(__file__))
+db_path = ROOT + '/files/db/'
 dojo = Dojo("Andela", "Nairobi")
+db = Db()
 
 
 def docopt_cmd(func):
@@ -127,24 +130,34 @@ class DojoInteractive(cmd.Cmd):
     @docopt_cmd
     def do_save_state(self, args):
         """Usage: save_state [--db=sqlite_database]"""
-        database_name = args['--db']
-        if database_name:
-            pass
+        database_name = args['--db'] if args['--db'] else 'andela_dojo'
+        if database_name == 'andela_dojo':
+            if os.path.exists(db_path + database_name + '.db'):
+                database = self.read_database(database_name)
+            else:
+                database = self.initialize_default_db()
         else:
-            dojo.save_state()
-            dojo.reset()
-            dojo.load_state()
+            if os.path.exists(db_path + database_name + '.db'):
+                database = self.read_database(database_name)
+            else:
+                database = self.create_database(database_name)
+
+        dojo.session = database.session
+        dojo.save_state()
+        dojo.reset()
+        dojo.load_state()
 
     @docopt_cmd
     def do_load_state(self, args):
         """Usage: load_state <sqlite_database>"""
         database_name = args['<sqlite_database>']
-        default_db = 'andela_dojo.db'
-        if database_name != default_db:
-            pass
-        else:
+        if os.path.exists(db_path + database_name + '.db'):
+            database = self.read_database(database_name)
+            dojo.session = database.session
             dojo.reset()
             dojo.load_state()
+        else:
+            print '{}.db does not exit.'.format(database_name)
 
     @docopt_cmd
     def do_assign_rooms(self, args):
@@ -156,11 +169,36 @@ class DojoInteractive(cmd.Cmd):
         """Usage: reset_system"""
         dojo.reset()
 
-    def do_quit(self, arg):
+    def do_drop_database(self, args):
+        """Deletes the currently active database"""
+        if db.db_name is None:
+            print "No active database detected."
+        else:
+            self.drop_database()
+
+    def do_quit(self, args):
         """Quits out of Interactive Mode."""
         print('Good Bye!')
         exit()
 
+    def create_database(self, name):
+        if name:
+            db.create(name)
+            return db
+
+    def read_database(self, name):
+        if name:
+            db.read(name)
+            return db
+
+    def initialize_default_db(self):
+        db.create('andela_dojo')
+        print "Default andela_dojo.db created!"
+        return db
+
+    def drop_database(self):
+        file_path = db_path + db.db_name + '.db'
+        db.drop(file_path)
 
 if __name__ == '__main__':
     opt = docopt(__doc__, sys.argv[1:])

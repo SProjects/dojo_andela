@@ -19,12 +19,6 @@ class Room(object):
         print "{} has been allocated the office {}".format(person.name, self.name)
         return person
 
-    def assign_fellow_space(self, fellow):
-        fellow.livingspace = self
-        self.spaces -= 1
-        print "{} has been allocated the livingspace {}".format(fellow.name, self.name)
-        return fellow
-
     def has_space(self):
         return self.spaces != 0
 
@@ -61,7 +55,7 @@ class Office(Room):
             for _, in_memory_office in in_memory_offices.items():
                 db_office = DBOffice(in_memory_office.name, in_memory_office.spaces) \
                     if not in_memory_office.is_saved() else \
-                    session.query(DBOffice).filter_by(name=in_memory_office.name).one()
+                    session.query(DBOffice).filter_by(name=in_memory_office.name).first()
                 db_office.spaces = in_memory_office.spaces
 
                 session.add(db_office)
@@ -91,20 +85,20 @@ class Livingspace(Room):
     def __init__(self, name):
         super(self.__class__, self).__init__(name, self.SPACE)
 
-    def print_occupants(self, occupants):
-        print self.name.upper()
-        print "--------------------------"
-        print ", ".join([occupant.name.upper() for occupant in self.get_occupants(occupants)])
-        print
-
     def get_occupants(self, occupants):
         return [occupant for occupant in occupants if
                 occupant.wants_accommodation() and occupant.livingspace.name == self.name]
 
+    def assign_fellow_space(self, fellow):
+        fellow.livingspace = self
+        self.spaces -= 1
+        print "{} has been allocated the livingspace {}".format(fellow.name, self.name)
+        return fellow
+
     @staticmethod
     def create_from_db_object(db_livingspace):
         if db_livingspace:
-            livingspace = Office(db_livingspace.name)
+            livingspace = Livingspace(db_livingspace.name)
             livingspace.spaces = db_livingspace.spaces
             return livingspace
         return None
@@ -117,7 +111,7 @@ class Livingspace(Room):
             for _, in_memory_livingspace in in_memory_livingspaces.items():
                 db_livingspace = DBLivingspace(in_memory_livingspace.name, in_memory_livingspace.spaces) \
                     if not in_memory_livingspace.is_saved() else \
-                    session.query(DBLivingspace).filter_by(name=in_memory_livingspace.name).one()
+                    session.query(DBLivingspace).filter_by(name=in_memory_livingspace.name).first()
                 db_livingspace.spaces = in_memory_livingspace.spaces
 
                 session.add(db_livingspace)
@@ -130,7 +124,7 @@ class Livingspace(Room):
         with session.no_autoflush:
             db_livingspaces = session.query(DBLivingspace).all()
             for db_livingspace in db_livingspaces:
-                livingspace = Office(db_livingspace.name)
+                livingspace = Livingspace(db_livingspace.name)
                 livingspace.spaces = Livingspace.SPACE - len(db_livingspace.fellows)
                 livingspace.saved = True
                 if livingspace.spaces != 0:

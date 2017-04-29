@@ -1,4 +1,3 @@
-from sqlalchemy.orm import sessionmaker
 from app.db.models import Fellow as DBFellow, Staff as DBStaff
 from app.db.models import Office as DBOffice, Livingspace as DBLivingspace
 from app.models.room import Office, Livingspace
@@ -49,7 +48,7 @@ class Fellow(Person):
 
                 db_fellow = DBFellow(in_memory_fellow.name, in_memory_fellow.accommodation)\
                     if not in_memory_fellow.is_saved() \
-                    else session.query(DBFellow).filter_by(name=in_memory_fellow.name).one()
+                    else session.query(DBFellow).filter_by(name=in_memory_fellow.name).first()
 
                 db_fellow.office = office
                 db_fellow.livingspace = livingspace
@@ -89,7 +88,7 @@ class Staff(Person):
                 office = in_memory_staff.get_office_from_db(session, in_memory_office) if in_memory_office else None
 
                 db_staff = DBStaff(in_memory_staff.name) if not in_memory_staff.is_saved() \
-                    else session.query(DBStaff).filter_by(name=in_memory_staff.name).one()
+                    else session.query(DBStaff).filter_by(name=in_memory_staff.name).first()
 
                 db_staff.office = office
                 session.add(db_staff)

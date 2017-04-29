@@ -108,6 +108,19 @@ class TestDojo(unittest.TestCase):
         self.assertListEqual([self.dojo.staff[0].office, self.dojo.fellows[0].office], [office1, office1])
         self.assertEqual(4, office1.spaces)
 
+    def test_when_fellow_is_created_is_assigned_an_office_and_livingspace_if_he_wants_one(self):
+        livingspace_name = 'livingspace1'
+        self.dojo.create_room(['livingspace1'], self.livingspace_room_type)
+        livingspace = self.dojo.livingspaces[livingspace_name]
+
+        office_name = 'office1'
+        self.dojo.create_room(['office1'], self.office_room_type)
+        office = self.dojo.offices[office_name]
+
+        self.dojo.add_person('Fellow Name', self.fellow_type, self.yes_livingspace)
+
+        self.assertListEqual([self.dojo.fellows[0].livingspace, self.dojo.fellows[0].office], [livingspace, office])
+
     def test_person_is_not_assigned_office_if_no_office_has_been_created(self):
         self.dojo.add_person('Fellow Name', self.fellow_type, self.no_livingspace)
         self.assertEqual(self.dojo.fellows[0].office, None)

@@ -24,6 +24,9 @@ class Office(Base):
         self.name = name
         self.spaces = spaces
 
+    def __eq__(self, other):
+        return self.name == other.name and self.spaces == self.spaces
+
 
 class Livingspace(Base):
     __tablename__ = "livingspace"
@@ -37,6 +40,9 @@ class Livingspace(Base):
     def __init__(self, name, spaces):
         self.name = name
         self.spaces = spaces
+
+    def __eq__(self, other):
+        return self.name == other.name and self.spaces == other.spaces
 
 
 class Fellow(Base):
@@ -53,6 +59,9 @@ class Fellow(Base):
         self.name = name
         self.accommodation = accommodation
 
+    def __eq__(self, other):
+        return self.name == other.name and self.accommodation == other.accommodation
+
 
 class Staff(Base):
     __tablename__ = "staff"
@@ -64,5 +73,8 @@ class Staff(Base):
 
     def __init__(self, name):
         self.name = name
+
+    def __eq__(self, other):
+        return self.name == other.name
 
 

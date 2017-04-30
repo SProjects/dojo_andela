@@ -80,6 +80,17 @@ class TestDojo(unittest.TestCase):
         actual_dictionary = {livingspace1: Livingspace(livingspace1), livingspace2: Livingspace(livingspace2)}
         self.assertDictEqual(self.dojo.livingspaces, actual_dictionary)
 
+    def test_create_room_does_not_add_room_that_already_exists(self):
+        livingspace1 = 'livingspace1'
+        self.dojo.create_room([livingspace1], self.livingspace_room_type)
+        office1 = 'office1'
+        self.dojo.create_room([office1], self.office_room_type)
+
+        self.dojo.create_room([livingspace1], self.livingspace_room_type)
+        self.dojo.create_room([office1], self.office_room_type)
+
+        self.assertListEqual([len(self.dojo.offices), len(self.dojo.livingspaces)], [1, 1])
+
     def test_create_room_raises_value_error_when_non_list_argument_is_passed(self):
         self.assertRaises(ValueError, self.dojo.create_room, 'livingspace_name', self.livingspace_room_type)
 

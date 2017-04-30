@@ -41,6 +41,10 @@ indicates if the fellow wants accommodation.
 * Save the dojo state to a database of your choosing `save_state --db=database_name`
 * Load data from the database `load_state database_name`. Default database is ```andela_dojo```.
 * Assign rooms to fellows or staff in the system that were previously unallocated `assign_rooms`. 
+
+**Automated Testing**
+* Use `nosetests --rednose -v` to run tests.
+* To view coverage out in html and terminal run `nosetests --rednose --with-coverage --cover-inclusive --cover-package=app --cover-erase --cover-html`
  
 
 

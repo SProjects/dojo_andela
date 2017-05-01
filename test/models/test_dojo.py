@@ -400,27 +400,35 @@ class TestDojo(unittest.TestCase):
         self.dojo.save_state()
         self.dojo.session.commit.assert_called_with()
 
-    @unittest.skip('Fellow and Staff object being seen as office objects. Don\'t know why')
     def test_load_updates_the_state_of_the_dojo_with_db_data(self):
+        fellow = Fellow('Fellow', 'Y')
+        staff = Staff('Staff')
+        office_name = 'office1'
+        office = Office(office_name)
+        livingspace_name = 'livingspace'
+        livingspace = Livingspace(livingspace_name)
+
         self.dojo.reset()
         self.dojo.session = MagicMock()
 
-        db_fellow = DBFellow('Fellow', 'Y')
-        db_staff = DBStaff('Staff')
-        db_office = DBOffice('office1', 6)
-        db_livingspace = DBLivingspace('livingspace', 4)
+        self.dojo.offices[office_name] = office
+        Office.load = MagicMock(return_value=self.dojo)
 
-        self.dojo.session.query(DBLivingspace).filter_by = MagicMock(return_value=db_livingspace)
-        self.dojo.session.query(DBOffice).filter_by = MagicMock(return_value=db_office)
+        self.dojo.livingspaces[livingspace_name] = livingspace
+        Livingspace.load = MagicMock(return_value=self.dojo)
 
-        self.dojo.session.query(DBStaff).all = MagicMock(return_value=[db_staff])
+        self.dojo.fellows.append(fellow)
+        Fellow.load = MagicMock(return_value=self.dojo)
 
-        self.dojo.session.query(DBFellow).all = MagicMock(return_value=[db_fellow])
-
-        self.dojo.session.query(DBLivingspace).all = MagicMock(return_value=[db_livingspace])
-        self.dojo.session.query(DBOffice).all = MagicMock(return_value=[db_office])
+        self.dojo.staff.append(staff)
+        Staff.load = MagicMock(return_value=self.dojo)
 
         self.dojo.load_state()
+        Office.load.assert_called_with(self.dojo)
+        Livingspace.load.assert_called_with(self.dojo)
+        Fellow.load.assert_called_with(self.dojo)
+        Staff.load.assert_called_with(self.dojo)
+
         self.assertEqual(len(self.dojo.offices), 1)
         self.assertEqual(len(self.dojo.livingspaces), 1)
         self.assertEqual(len(self.dojo.fellows), 1)

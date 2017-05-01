@@ -51,7 +51,7 @@ class Office(Room):
         session = dojo.session
 
         with session.no_autoflush:
-            in_memory_offices = dojo.offices
+            in_memory_offices = dict(list(dojo.offices.items()) + list(dojo.full_offices.items()))
             for _, in_memory_office in in_memory_offices.items():
                 db_office = DBOffice(in_memory_office.name, in_memory_office.spaces) \
                     if not in_memory_office.is_saved() else \
@@ -107,7 +107,7 @@ class Livingspace(Room):
     def save(dojo):
         session = dojo.session
         with session.no_autoflush:
-            in_memory_livingspaces = dojo.livingspaces
+            in_memory_livingspaces = dict(list(dojo.livingspaces.items()) + list(dojo.full_livingspaces.items()))
             for _, in_memory_livingspace in in_memory_livingspaces.items():
                 db_livingspace = DBLivingspace(in_memory_livingspace.name, in_memory_livingspace.spaces) \
                     if not in_memory_livingspace.is_saved() else \

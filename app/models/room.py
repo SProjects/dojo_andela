@@ -49,7 +49,6 @@ class Office(Room):
     @staticmethod
     def save(dojo):
         session = dojo.session
-
         with session.no_autoflush:
             in_memory_offices = dict(list(dojo.offices.items()) + list(dojo.full_offices.items()))
             for _, in_memory_office in in_memory_offices.items():
@@ -64,7 +63,6 @@ class Office(Room):
     @staticmethod
     def load(dojo):
         session = dojo.session
-
         with session.no_autoflush:
             db_offices = session.query(DBOffice).all()
             for db_office in db_offices:
@@ -120,7 +118,6 @@ class Livingspace(Room):
     @staticmethod
     def load(dojo):
         session = dojo.session
-
         with session.no_autoflush:
             db_livingspaces = session.query(DBLivingspace).all()
             for db_livingspace in db_livingspaces:

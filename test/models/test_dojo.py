@@ -442,10 +442,10 @@ class TestDojo(unittest.TestCase):
         mock_staff_load.return_value = all_staff
 
         result_dojo = self.dojo.load_state()
-        Office.load.assert_called_with(self.dojo.session)
-        Livingspace.load.assert_called_with(self.dojo.session)
-        Fellow.load.assert_called_with(self.dojo.session)
-        Staff.load.assert_called_with(self.dojo.session)
+        mock_office_load.assert_called_with(self.dojo.session)
+        mock_livingspace_load.assert_called_with(self.dojo.session)
+        mock_fellow_load.assert_called_with(self.dojo.session)
+        mock_staff_load.assert_called_with(self.dojo.session)
         self.assertEqual(len(result_dojo.offices), 1)
         self.assertEqual(len(result_dojo.full_offices), 0)
         self.assertEqual(len(result_dojo.livingspaces), 1)

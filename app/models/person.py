@@ -34,10 +34,8 @@ class Fellow(Person):
         return self.accommodation == 'Y'
 
     @staticmethod
-    def save(dojo):
-        session = dojo.session
+    def save(session, in_memory_fellows):
         with session.no_autoflush:
-            in_memory_fellows = dojo.fellows
             for in_memory_fellow in in_memory_fellows:
                 in_memory_office = in_memory_fellow.office
                 in_memory_livingspace = in_memory_fellow.livingspace
@@ -56,8 +54,8 @@ class Fellow(Person):
             print "Saved {} fellows.".format(len(in_memory_fellows))
 
     @staticmethod
-    def load(dojo):
-        session = dojo.session
+    def load(session):
+        fellows = []
         with session.no_autoflush:
             db_fellows = session.query(DBFellow).all()
             for db_fellow in db_fellows:
@@ -69,9 +67,9 @@ class Fellow(Person):
                 fellow.saved = True
                 fellow.livingspace = livingspace
 
-                dojo.fellows.append(fellow)
-            print "{} fellows loaded".format(len(dojo.fellows))
-        return dojo
+                fellows.append(fellow)
+            print "{} fellows loaded".format(len(fellows))
+        return fellows
 
 
 class Staff(Person):
@@ -79,10 +77,8 @@ class Staff(Person):
         super(Staff, self).__init__(name, None)
 
     @staticmethod
-    def save(dojo):
-        session = dojo.session
+    def save(session, in_memory_staffs):
         with session.no_autoflush:
-            in_memory_staffs = dojo.staff
             for in_memory_staff in in_memory_staffs:
                 in_memory_office = in_memory_staff.office
                 office = in_memory_staff.get_office_from_db(session, in_memory_office) if in_memory_office else None
@@ -95,8 +91,8 @@ class Staff(Person):
             print "Saved {} staff.".format(len(in_memory_staffs))
 
     @staticmethod
-    def load(dojo):
-        session = dojo.session
+    def load(session):
+        all_staff = []
         with session.no_autoflush:
             db_staff = session.query(DBStaff).all()
             for db_staff in db_staff:
@@ -105,6 +101,6 @@ class Staff(Person):
                 staff.office = office
                 staff.saved = True
 
-                dojo.staff.append(staff)
-            print "{} staff loaded.".format(len(dojo.staff))
-        return dojo
+                all_staff.append(staff)
+            print "{} staff loaded.".format(len(all_staff))
+        return all_staff

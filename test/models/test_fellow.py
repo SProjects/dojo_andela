@@ -1,6 +1,5 @@
 import unittest
 from app.models.person import Fellow
-from app.models.dojo import Dojo
 from mock import MagicMock
 from app.db.models import Fellow as DBFellow, Office as DBOffice, Livingspace as DBLivingspace
 from app.models.room import Office, Livingspace
@@ -23,34 +22,32 @@ class TestFellow(unittest.TestCase):
         self.livingspace = Livingspace('Livingspace1')
         self.livingspace.spaces = 3
 
-        self.dojo = Dojo('Andela', 'Nairobi')
-        self.dojo.fellows.append(self.fellow)
-
-        self.dojo.session = MagicMock()
+        self.fellows = [self.fellow]
+        self.session = MagicMock()
 
     def test_fellow_responds_properties(self):
         self.assertEqual(self.fellow.name, 'Fellow Name')
 
     def test_should_add_a_new_fellow_database_session(self):
-        Fellow.save(self.dojo)
-        self.dojo.session.add.assert_called_with(self.db_fellow)
+        Fellow.save(self.session, self.fellows)
+        self.session.add.assert_called_with(self.db_fellow)
 
     def test_should_load_a_fellow_from_the_database(self):
-        self.dojo.session.query(DBFellow).all = MagicMock(return_value=[self.db_fellow])
-        self.dojo.session.query(DBOffice).filter_by = MagicMock(return_value=self.db_office)
-        self.dojo.session.query(DBLivingspace).filter_by = MagicMock(return_value=self.db_livingspace)
-        self.dojo.fellows = []
+        self.session.query(DBFellow).all = MagicMock(return_value=[self.db_fellow])
+        self.session.query(DBOffice).filter_by = MagicMock(return_value=self.db_office)
+        self.session.query(DBLivingspace).filter_by = MagicMock(return_value=self.db_livingspace)
 
-        Fellow.load(self.dojo)
-        self.assertListEqual(self.dojo.fellows, [self.fellow])
-        self.assertEqual(self.dojo.fellows[0].office, self.office)
-        self.assertEqual(self.dojo.fellows[0].livingspace, self.livingspace)
+        result_fellows = Fellow.load(self.session)
+        self.assertListEqual(result_fellows, [self.fellow])
+        self.assertEqual(result_fellows[0].office, self.office)
+        self.assertEqual(result_fellows[0].livingspace, self.livingspace)
 
     def test_get_db_office_object_from_database(self):
-        self.fellow.get_office_from_db(self.dojo.session, self.office)
-        self.dojo.session.query(DBOffice).filter_by.assert_called_with(name=self.office.name)
+        self.fellow.get_office_from_db(self.session, self.office)
+        self.session.query(DBOffice).filter_by.assert_called_with(name=self.office.name)
 
     def test_get_db_livingspace_object_from_database(self):
-        self.fellow.get_livingspace_from_db(self.dojo.session, self.livingspace)
-        self.dojo.session.query(DBLivingspace).filter_by.assert_called_with(name=self.livingspace.name)
+        self.fellow.get_livingspace_from_db(self.session, self.livingspace)
+        self.session.query(DBLivingspace).filter_by.assert_called_with(name=self.livingspace.name)
+
 

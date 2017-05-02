@@ -1,6 +1,5 @@
 import unittest
 from app.models.person import Staff
-from app.models.dojo import Dojo
 from mock import MagicMock
 from app.db.models import Staff as DBStaff, Office as DBOffice
 from app.models.room import Office
@@ -17,28 +16,25 @@ class TestStaff(unittest.TestCase):
         self.office = Office('Office1')
         self.office.spaces = 5
 
-        self.dojo = Dojo('Andela', 'Nairobi')
-        self.dojo.staff.append(self.staff)
-
-        self.dojo.session = MagicMock()
+        self.all_staff = [self.staff]
+        self.session = MagicMock()
 
     def test_fellow_responds_properties(self):
         self.assertEqual(self.staff.name, 'Staff Name')
 
     def test_should_add_a_new_staff_to_database_session(self):
-        Staff.save(self.dojo)
-        self.dojo.session.add.assert_called_with(self.db_staff)
+        Staff.save(self.session, self.all_staff)
+        self.session.add.assert_called_with(self.db_staff)
 
     def test_should_load_staff_from_database(self):
-        self.dojo.session.query(DBStaff).all = MagicMock(return_value=[self.db_staff])
-        self.dojo.session.query(DBOffice).filter_by = MagicMock(return_value=self.db_office)
-        self.dojo.staff = []
+        self.session.query(DBStaff).all = MagicMock(return_value=[self.db_staff])
+        self.session.query(DBOffice).filter_by = MagicMock(return_value=self.db_office)
 
-        Staff.load(self.dojo)
-        self.assertListEqual(self.dojo.staff, [self.staff])
-        self.assertEqual(self.dojo.staff[0].office, self.office)
+        result_staff = Staff.load(self.session)
+        self.assertListEqual(result_staff, [self.staff])
+        self.assertEqual(result_staff[0].office, self.office)
 
     def test_get_db_office_object_from_database(self):
-        self.staff.get_office_from_db(self.dojo.session, self.office)
-        self.dojo.session.query(DBOffice).filter_by.assert_called_with(name=self.office.name)
+        self.staff.get_office_from_db(self.session, self.office)
+        self.session.query(DBOffice).filter_by.assert_called_with(name=self.office.name)
 

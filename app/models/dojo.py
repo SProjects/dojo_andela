@@ -143,11 +143,11 @@ class Dojo(object):
             self._update_available_offices()
 
     def print_allocated_people(self):
-        spaces = dict(list(self.full_livingspaces.items()) + list(self.livingspaces.items()) +
-                      list(self.full_offices.items()) + list(self.offices.items()))
+        rooms = dict(list(self.full_livingspaces.items()) + list(self.livingspaces.items()) + list(
+            self.full_offices.items()) + list(self.offices.items()))
 
-        for space_name, space in spaces.items():
-            self.print_people_in_room(space.name)
+        for _, room in rooms.items():
+            self.print_people_in_room(room.name)
             print
 
     def print_unallocated_people(self):
@@ -271,20 +271,20 @@ class Dojo(object):
         print "{} successfully reallocated to {}".format(staff.name, staff.office.name)
 
     def save_state(self):
-        Office.save(self)
-        Livingspace.save(self)
+        Office.save(self.session, self.offices, self.full_livingspaces)
+        Livingspace.save(self.session, self.livingspaces, self.full_livingspaces)
         self.session.commit()
 
-        Fellow.save(self)
-        Staff.save(self)
+        Fellow.save(self.session, self.fellows)
+        Staff.save(self.session, self.staff)
         self.session.commit()
 
     def load_state(self):
         print "Loading data...."
-        Office.load(self)
-        Livingspace.load(self)
-        Fellow.load(self)
-        Staff.load(self)
+        self.offices, self.full_offices = Office.load(self.session)
+        self.livingspaces, self.full_livingspaces = Livingspace.load(self.session)
+        self.fellows = Fellow.load(self.session)
+        self.staff = Staff.load(self.session)
         return self
 
     def reset(self):
@@ -298,5 +298,3 @@ class Dojo(object):
         self.staff = []
         print "Reset complete...."
         print
-
-

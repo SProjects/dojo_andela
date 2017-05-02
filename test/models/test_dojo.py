@@ -7,8 +7,6 @@ from app.models.room import Office, Livingspace
 from app.models.person import Fellow, Staff
 from app.errors.dojo_errors import StaffCantBeAssignedToLivingspace
 from mock import MagicMock
-from app.db.models import Office as DBOffice, Livingspace as DBLivingspace
-from app.db.models import Fellow as DBFellow, Staff as DBStaff
 
 """Citation:
     Link: http://code.activestate.com/lists/python-list/366576/
@@ -394,13 +392,33 @@ class TestDojo(unittest.TestCase):
         dojo_state = [self.dojo.fellows, self.dojo.staff, self.dojo.offices, self.dojo.livingspaces]
         self.assertListEqual(dojo_state, [[], [], {}, {}])
 
-    def test_save_call_commit_to_save_added_data(self):
+    @patch('app.models.room.Office.save')
+    @patch('app.models.room.Livingspace.save')
+    @patch('app.models.person.Fellow.save')
+    @patch('app.models.person.Staff.save')
+    def test_save_call_commit_to_save_added_data(self, mock_staff_save, mock_fellow_save, mock_livingspace_save,
+                                                 mock_office_save):
+        self.dojo.reset()
         self.dojo.session = MagicMock()
 
+        self.dojo.create_room(['office1'], self.office_room_type)
+        self.dojo.create_room(['livingspace1'], self.livingspace_room_type)
+        self.dojo.add_person('Fellow', self.fellow_type, self.no_livingspace)
+        self.dojo.add_person('Staff', self.staff_type, self.no_livingspace)
+
         self.dojo.save_state()
+        mock_office_save.assert_called_with(self.dojo.session, self.dojo.offices, self.dojo.full_offices)
+        mock_livingspace_save.assert_called_with(self.dojo.session, self.dojo.livingspaces, self.dojo.full_livingspaces)
+        mock_fellow_save.assert_called_with(self.dojo.session, self.dojo.fellows)
+        mock_staff_save.assert_called_with(self.dojo.session, self.dojo.staff)
         self.dojo.session.commit.assert_called_with()
 
-    def test_load_updates_the_state_of_the_dojo_with_db_data(self):
+    @patch('app.models.room.Office.load')
+    @patch('app.models.room.Livingspace.load')
+    @patch('app.models.person.Fellow.load')
+    @patch('app.models.person.Staff.load')
+    def test_load_updates_the_state_of_the_dojo_with_db_data(self, mock_staff_load, mock_fellow_load,
+                                                             mock_livingspace_load, mock_office_load):
         fellow = Fellow('Fellow', 'Y')
         staff = Staff('Staff')
         office_name = 'office1'
@@ -411,25 +429,26 @@ class TestDojo(unittest.TestCase):
         self.dojo.reset()
         self.dojo.session = MagicMock()
 
-        self.dojo.offices[office_name] = office
-        Office.load = MagicMock(return_value=self.dojo)
+        offices, full_offices = {office_name: office}, {}
+        mock_office_load.return_value = (offices, full_offices)
 
-        self.dojo.livingspaces[livingspace_name] = livingspace
-        Livingspace.load = MagicMock(return_value=self.dojo)
+        livingspaces, full_livingspaces = {livingspace_name: livingspace}, {}
+        mock_livingspace_load.return_value = (livingspaces, full_livingspaces)
 
-        self.dojo.fellows.append(fellow)
-        Fellow.load = MagicMock(return_value=self.dojo)
+        fellows = [fellow]
+        mock_fellow_load.return_value = fellows
 
-        self.dojo.staff.append(staff)
-        Staff.load = MagicMock(return_value=self.dojo)
+        all_staff = [staff]
+        mock_staff_load.return_value = all_staff
 
-        self.dojo.load_state()
-        Office.load.assert_called_with(self.dojo)
-        Livingspace.load.assert_called_with(self.dojo)
-        Fellow.load.assert_called_with(self.dojo)
-        Staff.load.assert_called_with(self.dojo)
-
-        self.assertEqual(len(self.dojo.offices), 1)
-        self.assertEqual(len(self.dojo.livingspaces), 1)
-        self.assertEqual(len(self.dojo.fellows), 1)
-        self.assertEqual(len(self.dojo.staff), 1)
+        result_dojo = self.dojo.load_state()
+        Office.load.assert_called_with(self.dojo.session)
+        Livingspace.load.assert_called_with(self.dojo.session)
+        Fellow.load.assert_called_with(self.dojo.session)
+        Staff.load.assert_called_with(self.dojo.session)
+        self.assertEqual(len(result_dojo.offices), 1)
+        self.assertEqual(len(result_dojo.full_offices), 0)
+        self.assertEqual(len(result_dojo.livingspaces), 1)
+        self.assertEqual(len(result_dojo.full_livingspaces), 0)
+        self.assertEqual(len(result_dojo.fellows), 1)
+        self.assertEqual(len(result_dojo.staff), 1)

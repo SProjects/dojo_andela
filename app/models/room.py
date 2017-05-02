@@ -42,15 +42,15 @@ class Office(Room):
     def create_from_db_object(db_office):
         if db_office:
             office = Office(db_office.name)
-            office.spaces = db_office.spaces
+            office.spaces = Office.SPACES - len(db_office.fellows + db_office.staff)
+            office.saved = True
             return office
         return None
 
     @staticmethod
-    def save(dojo):
-        session = dojo.session
+    def save(session, offices, full_offices):
         with session.no_autoflush:
-            in_memory_offices = dict(list(dojo.offices.items()) + list(dojo.full_offices.items()))
+            in_memory_offices = dict(list(offices.items()) + list(full_offices.items()))
             for _, in_memory_office in in_memory_offices.items():
                 db_office = DBOffice(in_memory_office.name, in_memory_office.spaces) \
                     if not in_memory_office.is_saved() else \
@@ -61,20 +61,18 @@ class Office(Room):
             print "Saved {} offices.".format(len(in_memory_offices))
 
     @staticmethod
-    def load(dojo):
-        session = dojo.session
+    def load(session):
+        offices, full_offices = {}, {}
         with session.no_autoflush:
             db_offices = session.query(DBOffice).all()
             for db_office in db_offices:
-                office = Office(db_office.name)
-                office.spaces = Office.SPACES - len(db_office.fellows + db_office.staff)
-                office.saved = True
+                office = Office.create_from_db_object(db_office)
                 if office.spaces != 0:
-                    dojo.offices[office.name] = office
+                    offices[office.name] = office
                 else:
-                    dojo.full_offices[office.name] = office
+                    full_offices[office.name] = office
             print "{} offices loaded".format(len(db_offices))
-        return dojo
+        return offices, full_offices
 
 
 class Livingspace(Room):
@@ -97,15 +95,15 @@ class Livingspace(Room):
     def create_from_db_object(db_livingspace):
         if db_livingspace:
             livingspace = Livingspace(db_livingspace.name)
-            livingspace.spaces = db_livingspace.spaces
+            livingspace.spaces = Livingspace.SPACE - len(db_livingspace.fellows)
+            livingspace.saved = True
             return livingspace
         return None
 
     @staticmethod
-    def save(dojo):
-        session = dojo.session
+    def save(session, livingspaces, full_livingspaces):
         with session.no_autoflush:
-            in_memory_livingspaces = dict(list(dojo.livingspaces.items()) + list(dojo.full_livingspaces.items()))
+            in_memory_livingspaces = dict(list(livingspaces.items()) + list(full_livingspaces.items()))
             for _, in_memory_livingspace in in_memory_livingspaces.items():
                 db_livingspace = DBLivingspace(in_memory_livingspace.name, in_memory_livingspace.spaces) \
                     if not in_memory_livingspace.is_saved() else \
@@ -116,17 +114,15 @@ class Livingspace(Room):
             print "Saved {} livingspaces".format(len(in_memory_livingspaces))
 
     @staticmethod
-    def load(dojo):
-        session = dojo.session
+    def load(session):
+        livingspaces, full_livingspaces = {}, {}
         with session.no_autoflush:
             db_livingspaces = session.query(DBLivingspace).all()
             for db_livingspace in db_livingspaces:
-                livingspace = Livingspace(db_livingspace.name)
-                livingspace.spaces = Livingspace.SPACE - len(db_livingspace.fellows)
-                livingspace.saved = True
+                livingspace = Livingspace.create_from_db_object(db_livingspace)
                 if livingspace.spaces != 0:
-                    dojo.livingspaces[livingspace.name] = livingspace
+                    livingspaces[livingspace.name] = livingspace
                 else:
-                    dojo.full_livingspaces[livingspace.name] = livingspace
+                    full_livingspaces[livingspace.name] = livingspace
             print "{} livingspaces loaded".format(len(db_livingspaces))
-        return dojo
+        return livingspaces, full_livingspaces

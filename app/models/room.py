@@ -29,7 +29,7 @@ class Room(object):
         print
 
     def get_occupants(self, occupants):
-        return [occupant for occupant in occupants if occupant.office.name == self.name]
+        return [occupant for occupant in occupants if occupant.office and occupant.office.name == self.name]
 
 
 class Office(Room):
@@ -82,7 +82,7 @@ class Livingspace(Room):
         super(self.__class__, self).__init__(name, self.SPACE)
 
     def get_occupants(self, occupants):
-        return [occupant for occupant in occupants if
+        return [occupant for occupant in occupants if occupant.livingspace and
                 occupant.wants_accommodation() and occupant.livingspace.name == self.name]
 
     def assign_fellow_space(self, fellow):

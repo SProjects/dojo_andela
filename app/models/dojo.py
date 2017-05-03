@@ -89,18 +89,24 @@ class Dojo(object):
             print "Staff {} has been successfully added.".format(staff.name)
 
     def _update_available_livingspaces(self):
-        self.livingspaces = {livingspace_name: livingspace for livingspace_name, livingspace in
-                             self.livingspaces.items() if livingspace.has_space()}
+        if len(self.livingspaces) > 0:
+            available_livingspaces = {livingspace_name: livingspace for livingspace_name, livingspace in
+                                      self.livingspaces.items() if livingspace.has_space()}
+            full_livingspaces = {livingspace_name: livingspace for livingspace_name, livingspace in
+                                 self.livingspaces.items() if not livingspace.has_space()}
 
-        self.full_livingspaces = {livingspace_name: livingspace for livingspace_name, livingspace in
-                                  self.livingspaces.items() if not livingspace.has_space()}
+            self.livingspaces = available_livingspaces
+            self.full_livingspaces = dict(list(self.full_livingspaces.items()) + list(full_livingspaces.items()))
 
     def _update_available_offices(self):
-        self.offices = {office_name: office for office_name, office in self.offices.items() if
-                        office.has_space()}
+        if len(self.offices) > 0:
+            available_offices = {office_name: office for office_name, office in self.offices.items()
+                                 if office.has_space()}
+            full_offices = {office_name: office for office_name, office in self.offices.items()
+                            if not office.has_space()}
 
-        self.full_offices = {office_name: office for office_name, office in self.offices.items() if
-                             not office.has_space()}
+            self.offices = available_offices
+            self.full_offices = dict(list(self.full_offices.items()) + list(full_offices.items()))
 
     def _assign_office(self, person):
         if self.offices:
@@ -131,15 +137,19 @@ class Dojo(object):
         unallocated_staff = self._unallocated_staff()
 
         for fellow in unallocated_fellows:
-            self._assign_office(fellow)
-            self._update_available_offices()
+            fellow_index = self.fellows.index(fellow)
+            if not fellow.office:
+                fellow = self._assign_office(fellow)
+                self._update_available_offices()
 
             if fellow.wants_accommodation():
-                self._assign_livingspace(fellow)
+                fellow = self._assign_livingspace(fellow)
                 self._update_available_livingspaces()
+            self.fellows[fellow_index] = fellow
 
         for staff in unallocated_staff:
-            self._assign_office(staff)
+            staff_index = self.staff.index(staff)
+            self.staff[staff_index] = self._assign_office(staff)
             self._update_available_offices()
 
     def print_allocated_people(self):

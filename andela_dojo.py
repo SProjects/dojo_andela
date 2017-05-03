@@ -86,7 +86,7 @@ class DojoInteractive(cmd.Cmd):
         name = " ".join([args["<last_name>"], args["<first_name>"]])
         person_type = args["TYPE"]
         want_accommodation = args["<wants_accommodation>"] if args["<wants_accommodation>"] else 'N'
-        dojo.add_person(name.upper(), person_type.upper(), want_accommodation)
+        dojo.add_person(name.upper(), person_type.upper(), want_accommodation.upper())
 
     @docopt_cmd
     def do_print_room(self, args):

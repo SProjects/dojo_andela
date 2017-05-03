@@ -150,13 +150,13 @@ class TestDojo(unittest.TestCase):
         self.assertEqual(self.dojo.fellows[0].office, None)
 
     def test_fellow_is_assigned_a_livingspace_if_he_wants_one(self):
-        livingspace1 = 'livingspace1'
-        self.dojo.create_room([livingspace1], self.livingspace_room_type)
-        livingspace1 = self.dojo.livingspaces[livingspace1]
+        livingspace_name = 'livingspace1'
+        self.dojo.create_room([livingspace_name], self.livingspace_room_type)
+        livingspace = self.dojo.livingspaces[livingspace_name]
 
         self.dojo.add_person('Fellow Name', self.fellow_type, self.yes_livingspace)
-        self.assertEqual(self.dojo.fellows[0].livingspace, livingspace1)
-        self.assertEqual(3, livingspace1.spaces)
+        self.assertEqual(self.dojo.fellows[0].livingspace, livingspace)
+        self.assertEqual(3, livingspace.spaces)
 
     def test_fellow_is_not_assigned_a_livingspace_if_no_livingspace_room_is_created(self):
         self.dojo.add_person('Fellow Name', self.fellow_type, self.yes_livingspace)
@@ -184,9 +184,7 @@ class TestDojo(unittest.TestCase):
         self.dojo.create_room([office_name], self.office_room_type)
         office1 = self.dojo.offices[office_name]
 
-        self.assertEqual(fellow.office, office1)
-        self.assertEqual(fellow.livingspace, livingspace1)
-        self.assertEqual(staff.office, office1)
+        self.assertListEqual([fellow.office, fellow.livingspace, staff.office], [office1, livingspace1, office1])
 
     def test_print_people_in_room_prints_people_assigned_to_a_room(self):
         def func(io):
@@ -203,6 +201,25 @@ class TestDojo(unittest.TestCase):
             self.assertIn(livingspace.name.upper(), io_value(io))
 
         with_io_divert(func)
+
+    def test_assign_rooms_to_unallocated_people_assigns_attaches_unallocated_people_to_rooms(self):
+        fellow_name = 'Fellow Name'
+        self.dojo.add_person(fellow_name, self.fellow_type, self.yes_livingspace)
+        staff_name = 'Staff Name'
+        self.dojo.add_person(staff_name, self.staff_type, self.no_livingspace)
+        fellow = self.dojo.fellows[0]
+        staff = self.dojo.staff[0]
+
+        self.assertListEqual([fellow.office, fellow.livingspace, staff.office], [None, None, None])
+
+        office_name = 'Office1'
+        self.dojo.create_room([office_name], self.office_room_type)
+        livingspace_name = 'Livingspace1'
+        self.dojo.create_room([livingspace_name], self.livingspace_room_type)
+        office = self.dojo.offices[office_name]
+        livingspace = self.dojo.livingspaces[livingspace_name]
+
+        self.assertListEqual([fellow.office, fellow.livingspace, staff.office], [office, livingspace, office])
 
     def test_print_allocated_people_prints_people_that_have_been_assigned_rooms(self):
         def func(io):

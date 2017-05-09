@@ -25,17 +25,15 @@ one whose name is supplied by the user of the application.
 **Usage**
 * To get all commands type `help` at the (andela_dojo) prompt. 
 * To get help for a particular command type `help command_name`.
-* Create a new room `create_room room_type room_names1 room_name2`. Replace `room_type` with either OFFICE or LIVINGSPACE.
-* Add fellow to dojo `add_person first_name last_name FELLOW Y | N`. Use either Y(yes) or N(no) at the end 
-indicates if the fellow wants accommodation.
+* Create a new room `create_room room_type room_names1` OR create multiple rooms `create_room room_type room_name1 room_name2 room_name3`. Replace `room_type` with either OFFICE or LIVINGSPACE.
+* Add fellow to dojo `add_person first_name last_name FELLOW Y | N`. Use either Y(yes) or N(no) at the end indicates if the fellow wants accommodation.
 * Add staff to dojo `add_staff first_name last_name STAFF`.
 * Print people allocated to a particular room `print_room room_name`
 * Print all room allocations in the dojo `print_allocations`.
 * Create text file with all room allocations in the dojo `print_allocations --o=filename.txt`.
 * Print unallocated people in the dojo `print_unallocated`.
 * Create text file with all unallocated people at the dojo `print_unallocated --o=filename.txt`. 
-* Reallocate fellow or staff at dojo to another office or livingspace `reallocate_person first_name last_name room_name`. 
-`room_name` refers to the name you gave an office or livingspace.
+* Reallocate fellow or staff at dojo to another office or livingspace `reallocate_person first_name last_name room_name`. `room_name` refers to the name you gave an office or livingspace.
 * Add people to the dojo from a text file `load_people`
 * Save the dojo state to the default andela_dojo.db database `save_state`.
 * Save the dojo state to a database of your choosing `save_state --db=database_name`

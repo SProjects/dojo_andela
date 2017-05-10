@@ -116,6 +116,7 @@ class TestDojo(unittest.TestCase):
 
             self.assertIn('Staff can not be assigned a livingspace.', io_value(io))
             self.assertEqual(self.dojo.staff, [Staff('Staff Name')])
+
         with_io_divert(func)
 
     def test_add_person_does_not_add_staff_if_he_already_exists(self):
@@ -316,9 +317,11 @@ class TestDojo(unittest.TestCase):
 
         filename = 'output.txt'
         file_path = self.ROOT_DIR + '/../../files/output.txt'
-        expected_output = '{}\n------------------------\n{}\n\n'.format(livingspace.name.upper(), fellow.name.upper())
-        expected_output += '{}\n------------------------\n{}, {}\n\n'.format(office.name.upper(), staff.name.upper(),
-                                                                             fellow.name.upper())
+        expected_output = '{}\n------------------------\n{}[F]\n\n'.format(livingspace.name.upper(),
+                                                                           fellow.name.upper())
+        expected_output += '{}\n------------------------\n{}[S], {}[F]\n\n'.format(office.name.upper(),
+                                                                                   staff.name.upper(),
+                                                                                   fellow.name.upper())
 
         self.dojo.print_allocated_people_to_file(filename)
 
@@ -493,6 +496,7 @@ class TestDojo(unittest.TestCase):
 
             self.dojo.reallocate_person(fellow_name, office1_name)
             self.assertIn('{} is already in {}'.format(fellow_name, office1_name), io_value(io))
+
         with_io_divert(func)
 
     def test_reallocate_person_prints_useful_message_when_fellow_already_belongs_to_the_livingspace(self):
@@ -504,6 +508,7 @@ class TestDojo(unittest.TestCase):
 
             self.dojo.reallocate_person(fellow_name, livingspace_name)
             self.assertIn('{} is already in {}'.format(fellow_name, livingspace_name), io_value(io))
+
         with_io_divert(func)
 
     def test_reallocate_person_prints_useful_message_when_staff_already_belongs_to_the_room(self):

@@ -27,7 +27,8 @@ class Room(object):
     def print_occupants(self, occupants):
         print self.name.upper()
         print "--------------------------"
-        print ", ".join([occupant.name.upper() for occupant in self.get_occupants(occupants)])
+        print ", ".join([occupant.name.upper() + "[{}]".format(occupant.__class__.__name__[0]) for occupant in
+                         self.get_occupants(occupants)])
         print
 
     def get_occupants(self, occupants):

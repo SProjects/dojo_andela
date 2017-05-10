@@ -214,14 +214,17 @@ class Dojo(object):
             livingspace_string += livingspace_name.upper()
             livingspace_string += "\n------------------------\n"
             livingspace_string += ", ".join(
-                [occupant.name.upper() for occupant in livingspace.get_occupants(self.fellows)])
+                [occupant.name.upper() + "[{}]".format(occupant.__class__.__name__[0]) for occupant in
+                 livingspace.get_occupants(self.fellows)])
             livingspace_string += "\n\n"
 
         office_string = ''
         for office_name, office in offices.items():
             office_string += office_name.upper()
             office_string += "\n------------------------\n"
-            office_string += ", ".join([occupant.name.upper() for occupant in office.get_occupants(occupants)])
+            office_string += ", ".join(
+                [occupant.name.upper() + "[{}]".format(occupant.__class__.__name__[0]) for occupant in
+                 office.get_occupants(occupants)])
             office_string += "\n\n"
 
         return livingspace_string + office_string

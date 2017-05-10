@@ -14,7 +14,7 @@ class Room(object):
         return "{}".format(self.name)
 
     def __eq__(self, other):
-        return self.name == other.name
+        return self.name == other.name and self.spaces == other.spaces
 
     def is_saved(self):
         return self.saved

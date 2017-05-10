@@ -59,18 +59,21 @@ class Dojo(object):
             self._update_available_livingspaces()
         if person_type == self.STAFF_PERSON_TYPE:
             self._add_staff(name)
-            print "Staff can not be assigned a livingspace." if accommodation == "Y" else ""
+            if accommodation == "Y":
+                print "Staff can not be assigned a livingspace."
         self._update_available_offices()
 
-    def add_people_from_file(self):
-        file_path = self.ROOT_DIR + "/../../files/input.txt"
-        if os.path.isfile(file_path):
-            with open(file_path, "r") as f:
+    def add_people_from_file(self, filepath):
+        filepath = self.ROOT_DIR + "/../../files/input.txt" if filepath is None else filepath
+        if os.path.isfile(filepath):
+            with open(filepath, "r") as f:
                 for line in f.readlines():
                     tokens = line.strip().split(" ")
                     name, person_type = " ".join(tokens[:2]), tokens[2]
                     accommodation = tokens[3:][0] if tokens[3:] else 'N'
                     self.add_person(name, person_type, accommodation)
+        else:
+            print "{} is not a valid filepath.".format(filepath)
 
     def _add_fellow(self, name, accommodation):
         fellow = Fellow(name, accommodation)

@@ -5,9 +5,9 @@ Usage:
     andela_dojo.py add_person <first_name> <last_name> (TYPE) [<wants_accommodation>]
     andela_dojo.py print_room <room_name>
     andela_dojo.py print_allocations [--o=filename]
-    andela_dojo.py print_unallocated [-o=filename]
+    andela_dojo.py print_unallocated [--o=filename]
     andela_dojo.py reallocate_person <first_name> <last_name> <new_room_name>
-    andela_dojo.py load_people
+    andela_dojo.py load_people [--input=filepath]
     andela_dojo.py save_state [--db=sqlite_database]
     andela_dojo.py load_state <sqlite_database>
     andela_dojo.py assign_rooms
@@ -19,6 +19,7 @@ Usage:
 Options:
     -i --interactive  Interactive Mode
     --o=filename   Provide output file [default: output.txt]
+    --input=filepath    External input file [default: input.txt]
     --db=sqlite_database    Pass database name as parameter [default: andela_dojo.db]
     -h --help    show help
     --version    show version of the application
@@ -127,8 +128,9 @@ class DojoInteractive(cmd.Cmd):
 
     @docopt_cmd
     def do_load_people(self, args):
-        """Usage: load_people"""
-        dojo.add_people_from_file()
+        """Usage: load_people [--input=filepath]"""
+        filepath = args['--input']
+        dojo.add_people_from_file(filepath)
 
     @docopt_cmd
     def do_save_state(self, args):

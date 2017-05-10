@@ -260,6 +260,7 @@ class TestDojo(unittest.TestCase):
             self.dojo.print_allocated_people()
 
             self.assertIn('No allocations at this time.', io_value(io))
+
         with_io_divert(func)
 
     def test_print_unallocated_people_prints_people_who_have_not_been_assigned_one_or_all_rooms(self):
@@ -283,6 +284,7 @@ class TestDojo(unittest.TestCase):
             self.dojo.print_unallocated_people()
 
             self.assertIn('No unallocated fellows or staff.', io_value(io))
+
         with_io_divert(func)
 
     @patch('__builtin__.print')
@@ -351,17 +353,42 @@ class TestDojo(unittest.TestCase):
     @patch('__builtin__.open', new_callable=mock_open, read_data='FELLOW NAME FELLOW Y\nSTAFF NAME STAFF', create=True)
     def test_add_people_from_file_add_new_people_from_a_formatted_input_text_file(self, fake_open):
         filename = 'input.txt'
-        file_path = self.ROOT_DIR + '/../../files/' + filename
+        filepath = self.ROOT_DIR + '/../../files/' + filename
         fellow = Fellow('FELLOW NAME', self.yes_livingspace)
         staff = Staff('STAFF NAME')
 
-        self.dojo.add_people_from_file()
+        self.dojo.add_people_from_file(None)
 
-        fake_open.assert_called_once_with(file_path, 'r')
+        fake_open.assert_called_once_with(filepath, 'r')
         mock_output_file_handle = fake_open()
         mock_output_file_handle.readlines.assert_called_with()
         self.assertListEqual(self.dojo.fellows, [fellow])
         self.assertListEqual(self.dojo.staff, [staff])
+
+    @patch('__builtin__.print')
+    @patch('app.models.dojo.os.path')
+    @patch('__builtin__.open', new_callable=mock_open, read_data='FELLOW NAME FELLOW Y\nSTAFF NAME STAFF', create=True)
+    def test_add_people_from_file_can_add_people_in_an_external_formatted_input_text_files_if_it_exists(self, fake_open,
+                                                                                                        mock_os,
+                                                                                                        mock_print):
+        external_filepath = '/external/file/path.txt'
+        fellow = Fellow('FELLOW NAME', self.yes_livingspace)
+        staff = Staff('STAFF NAME')
+
+        self.dojo.add_people_from_file(external_filepath)
+        mock_os.isfile.return_value = True
+
+        fake_open.assert_called_once_with(external_filepath, 'r')
+        mock_output_file_handle = fake_open()
+        mock_output_file_handle.readlines.assert_called_with()
+        self.assertListEqual(self.dojo.fellows, [fellow])
+        self.assertListEqual(self.dojo.staff, [staff])
+
+        wrong_external_path = '/wrong/file/path.txt'
+        mock_os.isfile.return_value = False
+        self.dojo.add_people_from_file(wrong_external_path)
+
+        self.assertTrue(mock_print.assert_called)
 
     def test_reallocate_person_changes_fellow_to_another_office(self):
         office1_name = 'office1'
@@ -459,6 +486,7 @@ class TestDojo(unittest.TestCase):
             self.dojo.reallocate_person(fellow_name, office1_name)
 
             self.assertIn('{} is already in {}'.format(fellow_name, office1_name), io_value(io))
+
         with_io_divert(func)
 
     def test_reallocate_person_prints_useful_message_when_staff_already_belongs_to_the_room(self):
@@ -471,6 +499,7 @@ class TestDojo(unittest.TestCase):
 
             self.dojo.reallocate_person(staff_name, office1_name)
             self.assertIn('{} is already in {}'.format(staff_name, office1_name), io_value(io))
+
         with_io_divert(func)
 
     def test_reallocate_fellow_who_does_not_want_a_livingspace_fails_with_useful_message(self):
@@ -484,6 +513,7 @@ class TestDojo(unittest.TestCase):
             self.dojo.reallocate_person(fellow_name, livingspace_name)
 
             self.assertIn("{} doesn't want a livingspace".format(fellow_name), io_value(io))
+
         with_io_divert(func)
 
     def test_reallocate_person_raises_error_when_there_is_attempt_to_reassign_staff_to_livingspace(self):

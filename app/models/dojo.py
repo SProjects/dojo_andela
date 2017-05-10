@@ -277,6 +277,7 @@ class Dojo(object):
                 return
             fellow_index = self.fellows.index(fellow)
             self._reassign_fellow_to_new_office(fellow, fellow_index, new_office)
+            self._update_available_offices()
 
         if fellow and new_livingspace:
             fellow = fellow[0]
@@ -286,6 +287,7 @@ class Dojo(object):
                     return
                 fellow_index = self.fellows.index(fellow)
                 self._reassign_fellow_to_new_livingspace(fellow, fellow_index, new_livingspace)
+                self._update_available_livingspaces()
             else:
                 print "{} doesn't want a livingspace".format(fellow.name)
 
@@ -296,22 +298,23 @@ class Dojo(object):
                 return
             staff_index = self.staff.index(staff)
             self._reassign_staff_to_new_office(staff, staff_index, new_office)
+            self._update_available_offices()
 
         if staff and new_livingspace:
             raise StaffCantBeAssignedToLivingspace("Staff can't be assigned a livingspace.")
 
     def _reassign_fellow_to_new_office(self, fellow, index, new_office):
-        fellow.office = new_office
+        fellow = new_office.assign_person_space(fellow)
         self.fellows[index] = fellow
         print "{} successfully reallocated to {}".format(fellow.name, fellow.office.name)
 
     def _reassign_fellow_to_new_livingspace(self, fellow, index, new_livingspace):
-        fellow.livingspace = new_livingspace
+        fellow = new_livingspace.assign_fellow_space(fellow)
         self.fellows[index] = fellow
         print "{} successfully reallocated to {}".format(fellow.name, fellow.livingspace.name)
 
     def _reassign_staff_to_new_office(self, staff, index, new_office):
-        staff.office = new_office
+        staff = new_office.assign_person_space(staff)
         self.staff[index] = staff
         print "{} successfully reallocated to {}".format(staff.name, staff.office.name)
 

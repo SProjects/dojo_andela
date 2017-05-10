@@ -5,6 +5,9 @@ from app.models.room import Office, Livingspace
 
 class Person(object):
     def __init__(self, name, office):
+        if type(self) == Person:
+            raise NotImplementedError("Can't directly create an instance of person.")
+
         self.name = name
         self.office = office
         self.saved = False

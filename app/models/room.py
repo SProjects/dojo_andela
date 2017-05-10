@@ -3,6 +3,9 @@ from app.db.models import Office as DBOffice, Livingspace as DBLivingspace
 
 class Room(object):
     def __init__(self, name, space):
+        if type(self) == Room:
+            raise NotImplementedError("Can't directly create an instance of room.")
+
         self.name = name
         self.spaces = space
         self.saved = False

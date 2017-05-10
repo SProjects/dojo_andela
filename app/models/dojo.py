@@ -282,7 +282,7 @@ class Dojo(object):
         print "{} successfully reallocated to {}".format(staff.name, staff.office.name)
 
     def save_state(self):
-        Office.save(self.session, self.offices, self.full_livingspaces)
+        Office.save(self.session, self.offices, self.full_offices)
         Livingspace.save(self.session, self.livingspaces, self.full_livingspaces)
         self.session.commit()
 

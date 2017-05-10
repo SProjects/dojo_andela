@@ -1,5 +1,4 @@
 import datetime, pytz
-from sqlalchemy import *
 from sqlalchemy import ForeignKey
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base

@@ -484,7 +484,7 @@ class TestDojo(unittest.TestCase):
 
         mock_print.assert_called
 
-    def test_reallocate_person_prints_useful_message_when_fellow_already_belongs_to_the_room(self):
+    def test_reallocate_person_prints_useful_message_when_fellow_already_belongs_to_the_office(self):
         def func(io):
             office1_name = 'office1'
             self.dojo.create_room([office1_name], self.office_room_type)
@@ -492,9 +492,18 @@ class TestDojo(unittest.TestCase):
             self.dojo.add_person(fellow_name, self.fellow_type, self.no_livingspace)
 
             self.dojo.reallocate_person(fellow_name, office1_name)
-
             self.assertIn('{} is already in {}'.format(fellow_name, office1_name), io_value(io))
+        with_io_divert(func)
 
+    def test_reallocate_person_prints_useful_message_when_fellow_already_belongs_to_the_livingspace(self):
+        def func(io):
+            livingspace_name = 'livingspace'
+            self.dojo.create_room([livingspace_name], self.livingspace_room_type)
+            fellow_name = 'Fellow Name'
+            self.dojo.add_person(fellow_name, self.fellow_type, self.yes_livingspace)
+
+            self.dojo.reallocate_person(fellow_name, livingspace_name)
+            self.assertIn('{} is already in {}'.format(fellow_name, livingspace_name), io_value(io))
         with_io_divert(func)
 
     def test_reallocate_person_prints_useful_message_when_staff_already_belongs_to_the_room(self):

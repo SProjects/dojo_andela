@@ -1,7 +1,9 @@
-import random, os
-from room import Office, Livingspace
-from person import Fellow, Staff
+import os
+import random
+
 from app.errors.dojo_errors import StaffCantBeAssignedToLivingspace
+from person import Fellow, Staff
+from room import Office, Livingspace
 
 
 class Dojo(object):

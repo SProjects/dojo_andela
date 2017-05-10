@@ -1,8 +1,10 @@
-import datetime, pytz
+import pytz
 from sqlalchemy import ForeignKey
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
+
+import datetime
 
 Base = declarative_base()
 

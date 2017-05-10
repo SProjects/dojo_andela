@@ -23,12 +23,15 @@ Options:
     -h --help    show help
     --version    show version of the application
 """
-
-import sys, cmd, os
 from docopt import docopt, DocoptExit
-from app.models.dojo import Dojo
-from app.errors.dojo_errors import StaffCantBeAssignedToLivingspace
+
+import cmd
+import os
+import sys
+
 from app.db.utilities import Db
+from app.errors.dojo_errors import StaffCantBeAssignedToLivingspace
+from app.models.dojo import Dojo
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 db_path = ROOT + '/files/db/'

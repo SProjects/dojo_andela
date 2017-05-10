@@ -22,10 +22,6 @@ class Person(object):
         with session.no_autoflush:
             return session.query(DBOffice).filter_by(name=office.name).first()
 
-    def get_livingspace_from_db(self, session, livingspace):
-        with session.no_autoflush:
-            return session.query(DBLivingspace).filter_by(name=livingspace.name).first()
-
 
 class Fellow(Person):
     def __init__(self, name, accommodation):
@@ -35,6 +31,10 @@ class Fellow(Person):
 
     def wants_accommodation(self):
         return self.accommodation == 'Y'
+
+    def get_livingspace_from_db(self, session, livingspace):
+        with session.no_autoflush:
+            return session.query(DBLivingspace).filter_by(name=livingspace.name).first()
 
     @staticmethod
     def save(session, in_memory_fellows):

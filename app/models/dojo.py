@@ -91,7 +91,7 @@ class Dojo(object):
             print "Staff {} has been successfully added.".format(staff.name)
 
     def _update_available_livingspaces(self):
-        if len(self.livingspaces) > 0:
+        if self.livingspaces:
             available_livingspaces = {livingspace_name: livingspace for livingspace_name, livingspace in
                                       self.livingspaces.items() if livingspace.has_space()}
             full_livingspaces = {livingspace_name: livingspace for livingspace_name, livingspace in
@@ -101,7 +101,7 @@ class Dojo(object):
             self.full_livingspaces = dict(list(self.full_livingspaces.items()) + list(full_livingspaces.items()))
 
     def _update_available_offices(self):
-        if len(self.offices) > 0:
+        if self.offices:
             available_offices = {office_name: office for office_name, office in self.offices.items()
                                  if office.has_space()}
             full_offices = {office_name: office for office_name, office in self.offices.items()

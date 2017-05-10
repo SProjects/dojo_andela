@@ -59,6 +59,7 @@ class Dojo(object):
             self._update_available_livingspaces()
         if person_type == self.STAFF_PERSON_TYPE:
             self._add_staff(name)
+            print "Staff can not be assigned a livingspace." if accommodation == "Y" else ""
         self._update_available_offices()
 
     def add_people_from_file(self):

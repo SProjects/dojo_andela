@@ -186,7 +186,7 @@ class Dojo(object):
 
     def _unallocated_fellows(self):
         return [fellow for fellow in self.fellows if
-                not fellow.office or (not fellow.livingspace and fellow.wants_accommodation)]
+                not fellow.office or (not fellow.livingspace and fellow.wants_accommodation())]
 
     def _unallocated_staff(self):
         return [staff for staff in self.staff if not staff.office]

@@ -203,7 +203,7 @@ class TestDojo(unittest.TestCase):
 
         with_io_divert(func)
 
-    def test_assign_rooms_to_unallocated_people_assigns_attaches_unallocated_people_to_rooms(self):
+    def test_assign_rooms_to_unallocated_people_when_rooms_are_created(self):
         fellow_name = 'Fellow Name'
         self.dojo.add_person(fellow_name, self.fellow_type, self.yes_livingspace)
         staff_name = 'Staff Name'
@@ -221,6 +221,17 @@ class TestDojo(unittest.TestCase):
         livingspace = self.dojo.livingspaces[livingspace_name]
 
         self.assertListEqual([fellow.office, fellow.livingspace, staff.office], [office, livingspace, office])
+
+    def test_assign_rooms_does_not_allocate_livingspace_to_a_fellow_that_doesnt_want_accommodation(self):
+        fellow_name = 'Fellow Name'
+        self.dojo.add_person(fellow_name, self.fellow_type, self.no_livingspace)
+
+        livingspace_name = 'Livingspace1'
+        self.dojo.create_room([livingspace_name], self.livingspace_room_type)
+        livingspace = self.dojo.livingspaces[livingspace_name]
+
+        self.assertEqual(self.dojo.fellows[0].livingspace, None)
+        self.assertNotEqual(self.dojo.fellows[0].livingspace, livingspace)
 
     def test_print_allocated_people_prints_people_that_have_been_assigned_rooms(self):
         def func(io):

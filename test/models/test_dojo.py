@@ -243,6 +243,14 @@ class TestDojo(unittest.TestCase):
 
         with_io_divert(func)
 
+    def test_print_allocated_people_prints_relevant_message_if_there_are_no_allocations(self):
+        def func(io):
+            self.dojo.reset()
+            self.dojo.print_allocated_people()
+
+            self.assertIn('No allocations at this time.', io_value(io))
+        with_io_divert(func)
+
     def test_print_unallocated_people_prints_people_who_have_not_been_assigned_one_or_all_rooms(self):
         def func(io):
             self.dojo.add_person('Fellow Name', self.fellow_type, self.yes_livingspace)
@@ -256,6 +264,14 @@ class TestDojo(unittest.TestCase):
             self.assertIn(fellow.name.upper(), io_value(io))
             self.assertIn(staff.name.upper(), io_value(io))
 
+        with_io_divert(func)
+
+    def test_print_unallocated_people_print_relevant_message_if_there_are_no_unassigned_people(self):
+        def func(io):
+            self.dojo.reset()
+            self.dojo.print_unallocated_people()
+
+            self.assertIn('No unallocated fellows or staff.', io_value(io))
         with_io_divert(func)
 
     @patch('__builtin__.print')

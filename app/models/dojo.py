@@ -158,13 +158,19 @@ class Dojo(object):
         rooms = dict(list(self.full_livingspaces.items()) + list(self.livingspaces.items()) + list(
             self.full_offices.items()) + list(self.offices.items()))
 
-        for _, room in rooms.items():
-            self.print_people_in_room(room.name)
-            print
+        if rooms:
+            for _, room in rooms.items():
+                self.print_people_in_room(room.name)
+                print
+        else:
+            print "No allocations at this time."
 
     def print_unallocated_people(self):
         unallocated_fellows = self._unallocated_fellows()
         unallocated_staff = self._unallocated_staff()
+
+        if not unallocated_staff and not unallocated_fellows:
+            print "No unallocated fellows or staff."
 
         if unallocated_fellows:
             print "UNALLOCATED FELLOWS"

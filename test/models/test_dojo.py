@@ -403,6 +403,78 @@ class TestDojo(unittest.TestCase):
         self.assertNotEqual(self.dojo.staff[0].office, office1)
         self.assertEqual(self.dojo.staff[0].office, office2)
 
+    @patch('__builtin__.print')
+    def test_reallocate_person_fails_with_useful_message_when_person_does_not_exist(self, mock_print):
+        office1_name = 'office1'
+        self.dojo.create_room([office1_name], self.office_room_type)
+        office1 = self.dojo.offices[office1_name]
+        self.dojo.add_person('Fellow Name', self.fellow_type, self.no_livingspace)
+
+        self.dojo.reallocate_person('Nonexistent Person', office1)
+
+        mock_print.assert_called
+
+    @patch('__builtin__.print')
+    def test_reallocate_person_fails_with_useful_message_when_room_name_does_not_exist(self, mock_print):
+        office1_name = 'office1'
+        self.dojo.create_room([office1_name], self.office_room_type)
+        self.dojo.add_person('Fellow Name', self.fellow_type, self.no_livingspace)
+        fellow = self.dojo.fellows[0]
+
+        self.dojo.reallocate_person(fellow.name, 'Nonexistent office')
+
+        mock_print.assert_called
+
+    @patch('__builtin__.print')
+    def test_reallocate_person_fails_with_useful_message_when_room_os_already_full(self, mock_print):
+        office1_name = 'office1'
+        full_office = Office(office1_name)
+        full_office.spaces = 0
+        self.dojo.full_offices[office1_name] = full_office
+        self.dojo.add_person('Fellow Name', self.fellow_type, self.no_livingspace)
+        fellow = self.dojo.fellows[0]
+
+        self.dojo.reallocate_person(fellow.name, office1_name)
+
+        mock_print.assert_called
+
+    def test_reallocate_person_prints_useful_message_when_fellow_already_belongs_to_the_room(self):
+        def func(io):
+            office1_name = 'office1'
+            self.dojo.create_room([office1_name], self.office_room_type)
+            fellow_name = 'Fellow Name'
+            self.dojo.add_person(fellow_name, self.fellow_type, self.no_livingspace)
+
+            self.dojo.reallocate_person(fellow_name, office1_name)
+
+            self.assertIn('{} is already in {}'.format(fellow_name, office1_name), io_value(io))
+        with_io_divert(func)
+
+    def test_reallocate_person_prints_useful_message_when_staff_already_belongs_to_the_room(self):
+        def func(io):
+            office1_name = 'office1'
+            self.dojo.create_room([office1_name], self.office_room_type)
+
+            staff_name = 'Staff Name'
+            self.dojo.add_person(staff_name, self.staff_type, self.no_livingspace)
+
+            self.dojo.reallocate_person(staff_name, office1_name)
+            self.assertIn('{} is already in {}'.format(staff_name, office1_name), io_value(io))
+        with_io_divert(func)
+
+    def test_reallocate_fellow_who_does_not_want_a_livingspace_fails_with_useful_message(self):
+        def func(io):
+            fellow_name = 'Fellow Name'
+            self.dojo.add_person(fellow_name, self.fellow_type, self.no_livingspace)
+
+            livingspace_name = 'livingspace'
+            self.dojo.create_room([livingspace_name], self.livingspace_room_type)
+
+            self.dojo.reallocate_person(fellow_name, livingspace_name)
+
+            self.assertIn("{} doesn't want a livingspace".format(fellow_name), io_value(io))
+        with_io_divert(func)
+
     def test_reallocate_person_raises_error_when_there_is_attempt_to_reassign_staff_to_livingspace(self):
         livingspace1_name = 'livingspace1'
         self.dojo.create_room([livingspace1_name], self.livingspace_room_type)

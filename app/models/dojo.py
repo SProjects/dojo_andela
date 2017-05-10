@@ -259,18 +259,40 @@ class Dojo(object):
         new_office = self.offices.get(new_room_name, None)
         new_livingspace = self.livingspaces.get(new_room_name, None)
 
+        if not fellow and not staff:
+            print "Person named {} couldn't be found.".format(identifier)
+            return
+        if not new_livingspace and not new_office:
+            print "Room named {} room couldn't be found or is already full.".format(new_room_name)
+            return
+
         if fellow and new_office:
             fellow = fellow[0]
+            if fellow.office == new_office:
+                print "{} is already in {}".format(fellow.name, new_office.name)
+                return
             fellow_index = self.fellows.index(fellow)
             self._reassign_fellow_to_new_office(fellow, fellow_index, new_office)
+
         if fellow and new_livingspace:
             fellow = fellow[0]
-            fellow_index = self.fellows.index(fellow)
-            self._reassign_fellow_to_new_livingspace(fellow, fellow_index, new_livingspace)
+            if fellow.wants_accommodation():
+                if fellow.livingspace == new_livingspace:
+                    print "{} is already in {}".format(fellow.name, new_livingspace.name)
+                    return
+                fellow_index = self.fellows.index(fellow)
+                self._reassign_fellow_to_new_livingspace(fellow, fellow_index, new_livingspace)
+            else:
+                print "{} doesn't want a livingspace".format(fellow.name)
+
         if staff and new_office:
             staff = staff[0]
+            if staff.office == new_office:
+                print "{} is already in {}".format(staff.name, new_office.name)
+                return
             staff_index = self.staff.index(staff)
             self._reassign_staff_to_new_office(staff, staff_index, new_office)
+
         if staff and new_livingspace:
             raise StaffCantBeAssignedToLivingspace("Staff can't be assigned a livingspace.")
 

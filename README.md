@@ -34,7 +34,13 @@ one whose name is supplied by the user of the application.
 * Print unallocated people in the dojo `print_unallocated`.
 * Create text file with all unallocated people at the dojo `print_unallocated --o=filename.txt`. 
 * Reallocate fellow or staff at dojo to another office or livingspace `reallocate_person first_name last_name room_name`. `room_name` refers to the name you gave an office or livingspace.
-* Add people to the dojo from a text file `load_people`
+* Add people to the dojo from a default text file using `load_people` or `load_people --input=filepath` where filepath is the absolute path the a formatted text file as below.
+```
+ OLUWAFEMI SULE FELLOW Y
+ DOMINIC WALTERS STAFF
+ SIMON PATTERSON FELLOW Y
+```
+
 * Save the dojo state to the default andela_dojo.db database `save_state`.
 * Save the dojo state to a database of your choosing `save_state --db=database_name`
 * Load data from the database `load_state database_name`. Default database is ```andela_dojo```.

@@ -15,9 +15,6 @@ class Person(object):
     def __repr__(self):
         return "{}".format(self.name)
 
-    def __eq__(self, other):
-        return self.name == other.name
-
     def is_saved(self):
         return self.saved
 
@@ -31,6 +28,9 @@ class Fellow(Person):
         super(self.__class__, self).__init__(name, None)
         self.accommodation = accommodation
         self.livingspace = None
+
+    def __eq__(self, other):
+        return self.name == other.name and self.accommodation == other.accommodation
 
     def wants_accommodation(self):
         return self.accommodation == 'Y'
@@ -81,6 +81,9 @@ class Fellow(Person):
 class Staff(Person):
     def __init__(self, name):
         super(Staff, self).__init__(name, None)
+
+    def __eq__(self, other):
+        return self.name == other.name
 
     @staticmethod
     def save(session, in_memory_staffs):

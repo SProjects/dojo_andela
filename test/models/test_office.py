@@ -19,6 +19,9 @@ class TestOffice(unittest.TestCase):
     def test_office_responds_to_properties(self):
         self.assertListEqual([self.office.name, self.office.spaces], ['office1', 6])
 
+    def test_repr_returns_office_name(self):
+        self.assertEqual(self.office.__repr__(), 'office1')
+
     def test_save_should_add_office_to_session(self):
         Office.save(self.session, self.offices, self.full_offices)
         self.session.add.assert_called_with(self.db_office)

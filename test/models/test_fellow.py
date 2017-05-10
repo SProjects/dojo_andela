@@ -30,6 +30,9 @@ class TestFellow(unittest.TestCase):
     def test_fellow_responds_properties(self):
         self.assertEqual(self.fellow.name, 'Fellow Name')
 
+    def test_repr_returns_fellow_name(self):
+        self.assertEqual(self.fellow.__repr__(), 'Fellow Name')
+
     def test_should_add_a_new_fellow_database_session(self):
         Fellow.save(self.session, self.fellows)
         self.session.add.assert_called_with(self.db_fellow)

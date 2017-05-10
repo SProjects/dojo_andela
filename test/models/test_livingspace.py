@@ -19,6 +19,9 @@ class TestLivingspace(unittest.TestCase):
     def test_office_responds_to_properties(self):
         self.assertListEqual([self.livingspace.name, self.livingspace.spaces], ['livingspace1', 4])
 
+    def test_repr_returns_livingspace_name(self):
+        self.assertEqual(self.livingspace.__repr__(), 'livingspace1')
+
     def test_save_should_add_livingspace_to_session(self):
         Livingspace.save(self.session, self.livingspaces, self.full_livingspaces)
         self.session.add.assert_called_with(self.db_livingspace)

@@ -10,6 +10,9 @@ class Room(object):
         self.spaces = space
         self.saved = False
 
+    def __repr__(self):
+        return "{}".format(self.name)
+
     def __eq__(self, other):
         return self.name == other.name
 

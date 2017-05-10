@@ -21,8 +21,11 @@ class TestStaff(unittest.TestCase):
         self.all_staff = [self.staff]
         self.session = MagicMock()
 
-    def test_fellow_responds_properties(self):
+    def test_staff_responds_properties(self):
         self.assertEqual(self.staff.name, 'Staff Name')
+
+    def test_repr_returns_staff_name(self):
+        self.assertEqual(self.staff.__repr__(), 'Staff Name')
 
     def test_should_add_a_new_staff_to_database_session(self):
         Staff.save(self.session, self.all_staff)

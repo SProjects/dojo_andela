@@ -110,6 +110,14 @@ class TestDojo(unittest.TestCase):
         self.dojo.add_person('Staff Name', self.staff_type, self.no_livingspace)
         self.assertEqual(self.dojo.staff, [Staff('Staff Name')])
 
+    def test_add_person_adds_new_staff_who_wants_accommodation_but_prints_appropriate_feedback(self):
+        def func(io):
+            self.dojo.add_person('Staff Name', self.staff_type, self.yes_livingspace)
+
+            self.assertIn('Staff can not be assigned a livingspace.', io_value(io))
+            self.assertEqual(self.dojo.staff, [Staff('Staff Name')])
+        with_io_divert(func)
+
     def test_add_person_does_not_add_staff_if_he_already_exists(self):
         self.dojo.add_person('Staff Name', self.staff_type, self.no_livingspace)
         self.dojo.add_person('Staff Name', self.staff_type, self.no_livingspace)

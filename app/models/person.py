@@ -70,8 +70,8 @@ class Fellow(Person):
                 livingspace = Livingspace.create_from_db_object(db_fellow.livingspace)
 
                 fellow.office = office
-                fellow.saved = True
                 fellow.livingspace = livingspace
+                fellow.saved = True
 
                 fellows.append(fellow)
             print "{} fellows loaded".format(len(fellows))
@@ -107,6 +107,7 @@ class Staff(Person):
             for db_staff in db_staff:
                 staff = Staff(db_staff.name)
                 office = Office.create_from_db_object(db_staff.office)
+
                 staff.office = office
                 staff.saved = True
 

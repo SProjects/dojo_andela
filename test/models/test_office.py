@@ -1,6 +1,8 @@
-import unittest
-from app.models.room import Office
 from mock import MagicMock
+
+import unittest
+
+from app.models.room import Office
 from app.db.models import Office as DBOffice, Fellow as DBFellow
 
 

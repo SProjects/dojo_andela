@@ -1,12 +1,13 @@
+from mock import MagicMock, mock_open, patch
+
 import unittest
 import sys
 from cStringIO import StringIO
-from mock import mock_open, patch
+
 from app.models.dojo import Dojo
 from app.models.room import Office, Livingspace
 from app.models.person import Fellow, Staff
 from app.errors.dojo_errors import StaffCantBeAssignedToLivingspace
-from mock import MagicMock
 
 """Citation:
     Link: http://code.activestate.com/lists/python-list/366576/

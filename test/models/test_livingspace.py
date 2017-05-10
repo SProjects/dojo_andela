@@ -1,6 +1,8 @@
-import unittest
-from app.models.room import Livingspace
 from mock import MagicMock
+
+import unittest
+
+from app.models.room import Livingspace
 from app.db.models import Livingspace as DBLivingspace, Fellow as DBFellow
 
 

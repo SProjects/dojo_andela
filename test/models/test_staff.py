@@ -1,8 +1,10 @@
-import unittest
-from app.models.person import Staff
 from mock import MagicMock
-from app.db.models import Staff as DBStaff, Office as DBOffice
+
+import unittest
+
+from app.models.person import Staff
 from app.models.room import Office
+from app.db.models import Staff as DBStaff, Office as DBOffice
 
 
 class TestStaff(unittest.TestCase):

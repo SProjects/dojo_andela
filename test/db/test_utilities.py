@@ -1,7 +1,9 @@
+from mock import MagicMock, mock, patch
+
 import unittest
+
 from app.db.models import *
 from app.db.utilities import Db
-from mock import MagicMock, mock, patch
 
 
 class TestUtilities(unittest.TestCase):

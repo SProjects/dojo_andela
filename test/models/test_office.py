@@ -23,6 +23,8 @@ class TestOffice(unittest.TestCase):
         self.assertEqual(self.office.__repr__(), 'office1')
 
     def test_save_should_add_office_to_session(self):
+        self.session.query(DBOffice).filter_by(name=self.office.name).first = MagicMock(return_value=None)
+
         Office.save(self.session, self.offices, self.full_offices)
         self.session.add.assert_called_with(self.db_office)
 

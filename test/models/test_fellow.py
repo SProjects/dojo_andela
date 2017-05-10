@@ -34,6 +34,8 @@ class TestFellow(unittest.TestCase):
         self.assertEqual(self.fellow.__repr__(), 'Fellow Name')
 
     def test_should_add_a_new_fellow_database_session(self):
+        self.session.query(DBFellow).filter_by(name=self.fellow.name).first = MagicMock(return_value=None)
+
         Fellow.save(self.session, self.fellows)
         self.session.add.assert_called_with(self.db_fellow)
 

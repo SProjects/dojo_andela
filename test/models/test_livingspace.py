@@ -23,6 +23,8 @@ class TestLivingspace(unittest.TestCase):
         self.assertEqual(self.livingspace.__repr__(), 'livingspace1')
 
     def test_save_should_add_livingspace_to_session(self):
+        self.session.query(DBLivingspace).filter_by(name=self.livingspace.name).first = MagicMock(return_value=None)
+
         Livingspace.save(self.session, self.livingspaces, self.full_livingspaces)
         self.session.add.assert_called_with(self.db_livingspace)
 

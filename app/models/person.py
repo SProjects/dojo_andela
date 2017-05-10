@@ -10,13 +10,9 @@ class Person(object):
 
         self.name = name
         self.office = office
-        self.saved = False
 
     def __repr__(self):
         return "{}".format(self.name)
-
-    def is_saved(self):
-        return self.saved
 
     def get_office_from_db(self, session, office):
         with session.no_autoflush:
@@ -50,9 +46,9 @@ class Fellow(Person):
                 livingspace = in_memory_fellow. \
                     get_livingspace_from_db(session, in_memory_livingspace) if in_memory_livingspace else None
 
-                db_fellow = DBFellow(in_memory_fellow.name, in_memory_fellow.accommodation)\
-                    if not in_memory_fellow.is_saved() \
-                    else session.query(DBFellow).filter_by(name=in_memory_fellow.name).first()
+                db_fellow = session.query(DBFellow).filter_by(name=in_memory_fellow.name).first()
+                if db_fellow is None:
+                    db_fellow = DBFellow(in_memory_fellow.name, in_memory_fellow.accommodation)
 
                 db_fellow.office = office
                 db_fellow.livingspace = livingspace
@@ -92,8 +88,9 @@ class Staff(Person):
                 in_memory_office = in_memory_staff.office
                 office = in_memory_staff.get_office_from_db(session, in_memory_office) if in_memory_office else None
 
-                db_staff = DBStaff(in_memory_staff.name) if not in_memory_staff.is_saved() \
-                    else session.query(DBStaff).filter_by(name=in_memory_staff.name).first()
+                db_staff = session.query(DBStaff).filter_by(name=in_memory_staff.name).first()
+                if db_staff is None:
+                    db_staff = DBStaff(in_memory_staff.name)
 
                 db_staff.office = office
                 session.add(db_staff)

@@ -8,16 +8,12 @@ class Room(object):
 
         self.name = name
         self.spaces = space
-        self.saved = False
 
     def __repr__(self):
         return "{}".format(self.name)
 
     def __eq__(self, other):
         return self.name == other.name and self.spaces == other.spaces
-
-    def is_saved(self):
-        return self.saved
 
     def assign_person_space(self, person):
         person.office = self
@@ -58,11 +54,11 @@ class Office(Room):
         with session.no_autoflush:
             in_memory_offices = dict(list(offices.items()) + list(full_offices.items()))
             for _, in_memory_office in in_memory_offices.items():
-                db_office = DBOffice(in_memory_office.name, in_memory_office.spaces) \
-                    if not in_memory_office.is_saved() else \
-                    session.query(DBOffice).filter_by(name=in_memory_office.name).first()
-                db_office.spaces = in_memory_office.spaces
+                db_office = session.query(DBOffice).filter_by(name=in_memory_office.name).first()
+                if db_office is None:
+                    db_office = DBOffice(in_memory_office.name, in_memory_office.spaces)
 
+                db_office.spaces = in_memory_office.spaces
                 session.add(db_office)
             print "Saved {} offices.".format(len(in_memory_offices))
 
@@ -111,11 +107,11 @@ class Livingspace(Room):
         with session.no_autoflush:
             in_memory_livingspaces = dict(list(livingspaces.items()) + list(full_livingspaces.items()))
             for _, in_memory_livingspace in in_memory_livingspaces.items():
-                db_livingspace = DBLivingspace(in_memory_livingspace.name, in_memory_livingspace.spaces) \
-                    if not in_memory_livingspace.is_saved() else \
-                    session.query(DBLivingspace).filter_by(name=in_memory_livingspace.name).first()
-                db_livingspace.spaces = in_memory_livingspace.spaces
+                db_livingspace = session.query(DBLivingspace).filter_by(name=in_memory_livingspace.name).first()
+                if db_livingspace is None:
+                    db_livingspace = DBLivingspace(in_memory_livingspace.name, in_memory_livingspace.spaces)
 
+                db_livingspace.spaces = in_memory_livingspace.spaces
                 session.add(db_livingspace)
             print "Saved {} livingspaces".format(len(in_memory_livingspaces))
 

@@ -28,6 +28,8 @@ class TestStaff(unittest.TestCase):
         self.assertEqual(self.staff.__repr__(), 'Staff Name')
 
     def test_should_add_a_new_staff_to_database_session(self):
+        self.session.query(DBStaff).filter_by(name=self.staff.name).first = MagicMock(return_value=None)
+
         Staff.save(self.session, self.all_staff)
         self.session.add.assert_called_with(self.db_staff)
 

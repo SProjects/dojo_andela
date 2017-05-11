@@ -142,6 +142,10 @@ class Dojo(object):
         unallocated_fellows = self._unallocated_fellows()
         unallocated_staff = self._unallocated_staff()
 
+        if not unallocated_fellows and not unallocated_staff:
+            print "There are no unallocated people."
+            return
+
         for fellow in unallocated_fellows:
             fellow_index = self.fellows.index(fellow)
             if not fellow.office:
